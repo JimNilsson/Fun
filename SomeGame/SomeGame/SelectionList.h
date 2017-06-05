@@ -12,7 +12,11 @@ public:
 	~SelectionList();
 
 	void SetFont(const std::string& fontname);
-
+	void SetPosition(const sf::Vector2f& pos);
+	void CenterOnPos(bool enable = true);
+	void CenterItems(bool enable = true);
+	
+	void SetSpacing(int width);
 
 	void AddOption(const std::string& text, std::function<void()> callback = nullptr);
 
@@ -32,9 +36,14 @@ private:
 	unsigned _distanceBetweenItems;
 	sf::Color _selectionColor;
 	sf::Color _unselectedColor;
+	bool _centerOnPos = false;
+	bool _centerItems = false;
 
 
-	float _Height();
+	float _Height(int firstXElements = -1);
+	void _Reposition();
+	void _Center();
+	void _CenterItems();
 
 };
 

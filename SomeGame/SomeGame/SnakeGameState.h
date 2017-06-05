@@ -14,7 +14,6 @@ public:
 	void Update();
 	void Draw();
 private:
-	sf::Sprite box;
 	sf::Clock _clock;
 
 	Snake _snake;
@@ -24,6 +23,9 @@ private:
 
 	bool _gameLost = false;
 	sf::Text _loserText;
+
+	unsigned _score = 0;
+	sf::Text _scoreText;
 	
 
 };

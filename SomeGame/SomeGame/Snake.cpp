@@ -1,12 +1,12 @@
 #include "Snake.h"
 #include "Application.h"
 
-Snake::Snake(float timePerMovement)
+Snake::Snake(float timePerMovement, float segmentSize)
 {
 	Application* app = Application::GetInstance();
 	
 	_timePerMovement = timePerMovement;
-	_segmentSize = 32;
+	_segmentSize = segmentSize;
 	float startPosX = _segmentSize * ((app->Width() / (uint32_t)_segmentSize) / 2);
 	float startPosY = _segmentSize * ((app->Height() / (uint32_t)_segmentSize) / 2);
 	_velocity = { 0, 0 };
@@ -68,7 +68,7 @@ Snake::SnakeStatus Snake::Update(float dt)
 		if (SelfCollide())
 			status = SnakeStatus::COLLIDED;
 		sf::Vector2f headPos = _segments[0].getPosition();
-		if (headPos.x < 0 || headPos.x >= app->Width() || headPos.y < 0 || headPos.y > app->Height())
+		if (headPos.x < 0 || headPos.x >= app->Width() || headPos.y < 0 || headPos.y >= app->Height())
 			status = SnakeStatus::COLLIDED;
 	}
 	return status;
@@ -99,6 +99,14 @@ bool Snake::SelfCollide() const
 	sf::FloatRect head = HeadBoundingBox();
 	for (size_t i = 2; i < _segments.size(); i++)
 		if (head.intersects(_segments[i].getGlobalBounds()))
+			return true;
+	return false;
+}
+
+bool Snake::OnBody(const sf::FloatRect & rect) const
+{
+	for (auto& segment : _segments)
+		if (segment.getGlobalBounds().intersects(rect))
 			return true;
 	return false;
 }

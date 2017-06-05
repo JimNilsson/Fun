@@ -7,7 +7,7 @@
 class Snake : public sf::Drawable
 {
 public:
-	Snake(float _timePerMovement = 0.25f);
+	Snake(float _timePerMovement, float segmentSize);
 	~Snake();
 	enum SnakeStatus
 	{
@@ -20,6 +20,7 @@ public:
 
 	sf::FloatRect HeadBoundingBox() const;
 	bool SelfCollide() const;
+	bool OnBody(const sf::FloatRect& rect) const;
 
 private:
 	std::vector<sf::RectangleShape> _segments;
