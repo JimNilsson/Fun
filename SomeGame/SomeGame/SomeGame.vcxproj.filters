@@ -19,6 +19,9 @@
     <Filter Include="Source Files\Snake">
       <UniqueIdentifier>{f895e937-f3ef-45bf-9f96-206c16b8460c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\PillPuzzle">
+      <UniqueIdentifier>{a04ef69f-0c9a-432f-8434-2a840803d7dd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -48,6 +51,9 @@
     <ClCompile Include="SnakeGameState.cpp">
       <Filter>Source Files\Snake</Filter>
     </ClCompile>
+    <ClCompile Include="PillPuzzleState.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="TextureManager.h">
@@ -76,6 +82,9 @@
     </ClInclude>
     <ClInclude Include="SnakeGameState.h">
       <Filter>Header Files\Snake</Filter>
+    </ClInclude>
+    <ClInclude Include="PillPuzzleState.h">
+      <Filter>Header Files\PillPuzzle</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

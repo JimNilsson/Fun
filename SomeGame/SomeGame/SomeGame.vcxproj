@@ -123,6 +123,7 @@
     <ClCompile Include="FontManager.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="MenuState.cpp" />
+    <ClCompile Include="PillPuzzleState.cpp" />
     <ClCompile Include="SelectionList.cpp" />
     <ClCompile Include="Snake.cpp" />
     <ClCompile Include="SnakeGameState.cpp" />
@@ -134,6 +135,7 @@
     <ClInclude Include="IState.h" />
     <ClInclude Include="Application.h" />
     <ClInclude Include="MenuState.h" />
+    <ClInclude Include="PillPuzzleState.h" />
     <ClInclude Include="SelectionList.h" />
     <ClInclude Include="Snake.h" />
     <ClInclude Include="SnakeGameState.h" />
