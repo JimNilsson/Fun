@@ -6,7 +6,7 @@ Snake::Snake(float timePerMovement, float segmentSize)
 	Application* app = Application::GetInstance();
 	
 	_timePerMovement = timePerMovement;
-	_segmentSize = segmentSize;
+	_segmentSize = (int)segmentSize;
 	float startPosX = _segmentSize * ((app->Width() / (uint32_t)_segmentSize) / 2);
 	float startPosY = _segmentSize * ((app->Height() / (uint32_t)_segmentSize) / 2);
 	_velocity = { 0, 0 };
@@ -36,19 +36,19 @@ Snake::SnakeStatus Snake::Update(float dt)
 
 	if (app->Events()->KeyDown(sf::Keyboard::Up) && _velocity.y == 0)
 	{
-		_pendingVelocity = sf::Vector2f(0, -_segmentSize);
+		_pendingVelocity = sf::Vector2f(0, (float)-_segmentSize);
 	}
 	else if (app->Events()->KeyDown(sf::Keyboard::Down) && _velocity.y == 0)
 	{
-		_pendingVelocity = sf::Vector2f(0, _segmentSize);
+		_pendingVelocity = sf::Vector2f(0, (float)_segmentSize);
 	}
 	else if (app->Events()->KeyDown(sf::Keyboard::Left) && _velocity.x == 0)
 	{
-		_pendingVelocity = sf::Vector2f(-_segmentSize, 0);
+		_pendingVelocity = sf::Vector2f((float)-_segmentSize, 0);
 	}
 	else if (app->Events()->KeyDown(sf::Keyboard::Right) && _velocity.x == 0)
 	{
-		_pendingVelocity = sf::Vector2f(_segmentSize, 0);
+		_pendingVelocity = sf::Vector2f((float)_segmentSize, 0);
 	}
 
 	_accumulatedTime += dt;

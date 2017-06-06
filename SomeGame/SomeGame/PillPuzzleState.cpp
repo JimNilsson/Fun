@@ -5,7 +5,7 @@
 PillPuzzleState::PillPuzzleState(Application * app) : IState(app)
 {
 	//Initialize the board
-	_numViruses = 20;
+	_numVirusClusters = 10;
 	blockSize = 32;
 	blocksX = 8;
 	blocksY = 16;
@@ -21,14 +21,15 @@ PillPuzzleState::PillPuzzleState(Application * app) : IState(app)
 		}
 	}
 
-	for (int i = 0; i < _numViruses; i++)
+	for (unsigned i = 0; i < _numVirusClusters; i++)
 	{
 		int x = 0;
 		int y = 0;
 		do
 		{
 			x = rand() % blocksX;
-			y = (rand() % (blocksY - 4)) + 4;
+			//Keep 6 topmost rows free of stuff
+			y = (rand() % (blocksY - 6)) + 6;
 		
 		} while (board[x][y].getFillColor() != sf::Color::Black);
 
@@ -38,15 +39,23 @@ PillPuzzleState::PillPuzzleState(Application * app) : IState(app)
 
 		board[x][y].setFillColor(colors[col]);
 		board[x][y].setTexture(&(_app->Textures()->GetTexture(textures[col])));
+		int numNeighbours = rand() % 9; //Won't necessarily be this many, some might end up on same place
+		for (int j = 0; j < numNeighbours; j++)
+		{
+			//Might overwrite previous viruses, but thats ok
+			int offsetX = (rand() % 2) == 0 ? -1 : 1;
+			int offsetY = (rand() % 2) == 0 ? -1 : 1;
+			if (x + offsetX >= 0 && x + offsetX < blocksX && y + offsetY >= 0 && y + offsetY < blocksY)
+			{
+				board[x + offsetX][y + offsetY].setFillColor(colors[col]);
+				board[x + offsetX][y + offsetY].setTexture(&(_app->Textures()->GetTexture(textures[col])));
+			}
+		}
 	}
-	
-	_indexer.x1 = 4;
-	_indexer.y1 = 1;
-	_indexer.x2 = 5;
-	_indexer.y2 = 1;
-	_indexer.col1 = sf::Color::Yellow;
-	_indexer.col2 = sf::Color::Red;
 
+
+	
+	ResetIndexer();
 	
 }
 
@@ -62,28 +71,48 @@ void PillPuzzleState::Update()
 	float dt = _clock.restart().asSeconds();
 	_moveDownAcc += dt;
 	
-	bool lateralMovement = false;
+
 	if (_app->Events()->KeySinglePress(sf::Keyboard::Right))
 	{
 		MoveRight();
-		lateralMovement = true;
+		_moveDownAcc = 0;
 	}
 	if (_app->Events()->KeySinglePress(sf::Keyboard::Left))
 	{
 		MoveLeft();
-		lateralMovement = true;
+		_moveDownAcc = 0;
 	}
-	if (_app->Events()->KeySinglePress(sf::Keyboard::D))
+	if (_app->Events()->KeySinglePress(sf::Keyboard::Up))
 	{
 		RotateCW();
+		_moveDownAcc = 0;
 	}
-	if ((_app->Events()->KeySinglePress(sf::Keyboard::Down) || _moveDownAcc >= _moveDownTime) && !lateralMovement)
+	if ((_app->Events()->KeySinglePress(sf::Keyboard::Down) || _moveDownAcc >= _moveDownTime))
 	{
 		_moveDownAcc = 0;
 		if (!MoveDown())
 		{
 			UpdateBoard();
 			ResetIndexer();
+
+			if (board[_indexer.x1][_indexer.y1].getFillColor() != sf::Color::Black || board[_indexer.x2][_indexer.y2].getFillColor() != sf::Color::Black)
+			{
+				_gameLost = true;
+			}
+
+			int numViruses = 0;
+			for (int x = 0; x < blocksX; x++)
+			{
+				for (int y = 0; y < blocksY; y++)
+				{
+					if (board[x][y].getTexture() != nullptr)
+						numViruses++;
+				}
+			}
+			if (numViruses == 0)
+			{
+				_gameWon = true;
+			}
 		}
 	}
 	
@@ -118,10 +147,11 @@ void PillPuzzleState::RotateCW()
 	}
 	else
 	{
-		if (_indexer.HighestX() + 1 < blocksX && board[_indexer.HighestX() + 1][_indexer.LowestY()].getFillColor() == sf::Color::Black)
+		if (_indexer.LowestX() - 1 >= 0 && board[_indexer.LowestX() - 1][_indexer.LowestY()].getFillColor() == sf::Color::Black)
 		{
 			board[_indexer.x1][_indexer.HighestY()].setFillColor(sf::Color::Black);
-			board[_indexer.x1 + 1][_indexer.LowestY()].setFillColor(_indexer.HighestYColor());
+			board[_indexer.x1 - 1][_indexer.LowestY()].setFillColor(_indexer.LowestYColor());
+			board[_indexer.x1][_indexer.LowestY()].setFillColor(_indexer.HighestYColor());
 			_indexer.RotateClockWise();
 		}
 	}
@@ -294,17 +324,46 @@ void PillPuzzleState::UpdateBoard()
 	}
 
 
+	for (int y = blocksY - 1; y >= 0; y--)
+	{
+		for (int x = 0; x < blocksX; x++)
+		{
+			if (board[x][y].getFillColor() == sf::Color::Black)
+			{
+				//Empty, look for shit that's about to fall from above
+
+				for (int k = y; k >= 0; k--)
+				{
+					if (board[x][k].getTexture() != nullptr)
+					{
+						break;
+					}
+					if (board[x][k].getFillColor() != sf::Color::Black && board[x][k].getTexture() == nullptr)
+					{
+						board[x][y].setFillColor(board[x][k].getFillColor());
+						board[x][k].setFillColor(sf::Color::Black);
+						break;
+					}
+				}
+			}
+		}
+	}
+
+
 }
 
 void PillPuzzleState::ResetIndexer()
 {
 	_indexer.x1 = 4;
-	_indexer.y1 = 1;
+	_indexer.y1 = 0;
 	_indexer.x2 = 5;
-	_indexer.y2 = 1;
+	_indexer.y2 = 0;
 
 	sf::Color colors[] = { sf::Color::Yellow ,sf::Color::Blue ,sf::Color::Red ,sf::Color::Green };
 
 	_indexer.col1 = colors[rand() % 4];
 	_indexer.col2 = colors[rand() % 4];
+
+	MoveDown();
+
 }

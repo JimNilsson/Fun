@@ -18,10 +18,12 @@ private:
 
 	sf::Clock _clock;
 	sf::RectangleShape board[8][16];
-	unsigned _numViruses;
+	unsigned _numVirusClusters;
 	int blocksX;
 	int blocksY;
 	float blockSize;
+	bool _gameWon = false;
+	bool _gameLost = false;
 
 	struct Indexer
 	{
@@ -40,17 +42,16 @@ private:
 			y1++; y2++;
 		}
 
-		int LowestY() const
-		{
-			return std::max(y1, y2);
-		}
-		int HighestY() const { return std::min(y1, y2); };
 
-		int LowestX() const { return std::min(x1, x2); };
+
+		
 		sf::Color LowestXColor() const { return x1 < x2 ? col1 : col2; };
 		sf::Color LowestYColor() const { return y1 > y2 ? col1 : col2; };
 		sf::Color HighestXColor() const { return x1 > x2 ? col1 : col2; };
 		sf::Color HighestYColor() const { return y1 < y2 ? col1 : col2; };
+		int LowestY() const { return std::max(y1, y2); };
+		int HighestY() const { return std::min(y1, y2); };
+		int LowestX() const { return std::min(x1, x2); };
 		int HighestX() const { return std::max(x1, x2); };
 		void IncrementX() { x1++; x2++; };
 		void DecrementX() { x1--; x2--; };
@@ -72,19 +73,19 @@ private:
 			{
 				if (y1 < y2)
 				{
-					x1 = x2 + 1;
+					x2 = x1 - 1;
 					y1 = y2;
 				}
 				else
 				{
-					x2 = x1 + 1;
+					x1 = x2 - 1;
 					y2 = y1;
 				}
 			}
 		}
 	};
 	Indexer _indexer;
-	float _moveDownTime = 0.5f;
+	float _moveDownTime = 1.0f;
 	float _moveDownAcc = 0.0f;
 
 
