@@ -121,10 +121,15 @@
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="EventHandler.cpp" />
     <ClCompile Include="FontManager.cpp" />
+    <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="MenuState.cpp" />
+    <ClCompile Include="PhysGame.cpp" />
+    <ClCompile Include="PhysicsComponent.cpp" />
+    <ClCompile Include="PhysicsEngine.cpp" />
     <ClCompile Include="PillPuzzleState.cpp" />
     <ClCompile Include="SelectionList.cpp" />
+    <ClCompile Include="sfmath.cpp" />
     <ClCompile Include="Snake.cpp" />
     <ClCompile Include="SnakeGameState.cpp" />
     <ClCompile Include="TextureManager.cpp" />
@@ -132,11 +137,16 @@
   <ItemGroup>
     <ClInclude Include="EventHandler.h" />
     <ClInclude Include="FontManager.h" />
+    <ClInclude Include="GameObject.h" />
     <ClInclude Include="IState.h" />
     <ClInclude Include="Application.h" />
     <ClInclude Include="MenuState.h" />
+    <ClInclude Include="PhysGame.h" />
+    <ClInclude Include="PhysicsComponent.h" />
+    <ClInclude Include="PhysicsEngine.h" />
     <ClInclude Include="PillPuzzleState.h" />
     <ClInclude Include="SelectionList.h" />
+    <ClInclude Include="sfmath.h" />
     <ClInclude Include="Snake.h" />
     <ClInclude Include="SnakeGameState.h" />
     <ClInclude Include="TextureManager.h" />

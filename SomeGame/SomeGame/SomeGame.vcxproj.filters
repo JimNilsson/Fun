@@ -22,6 +22,12 @@
     <Filter Include="Header Files\PillPuzzle">
       <UniqueIdentifier>{a04ef69f-0c9a-432f-8434-2a840803d7dd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\PhysGame">
+      <UniqueIdentifier>{e2f74423-66b0-4f86-8ee6-2df20f617afd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\PhysGame">
+      <UniqueIdentifier>{e6b3689e-9ddc-45cd-8670-508e67c5705b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -52,6 +58,21 @@
       <Filter>Source Files\Snake</Filter>
     </ClCompile>
     <ClCompile Include="PillPuzzleState.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysGame.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysicsComponent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysicsEngine.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sfmath.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -85,6 +106,21 @@
     </ClInclude>
     <ClInclude Include="PillPuzzleState.h">
       <Filter>Header Files\PillPuzzle</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysGame.h">
+      <Filter>Header Files\PhysGame</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicsComponent.h">
+      <Filter>Header Files\PhysGame</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicsEngine.h">
+      <Filter>Header Files\PhysGame</Filter>
+    </ClInclude>
+    <ClInclude Include="sfmath.h">
+      <Filter>Header Files\PhysGame</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject.h">
+      <Filter>Header Files\PhysGame</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
