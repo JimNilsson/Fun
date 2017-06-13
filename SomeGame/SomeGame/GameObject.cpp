@@ -7,7 +7,9 @@ GameObject::GameObject(PhysicsEngine * p, const sf::Vector2f & position, float m
 	_sprite.setPosition(_physComponent->Position());
 	_sprite.setTexture(&(Application::GetInstance()->Textures()->GetTexture("Textures/cyanball.png")));
 	_sprite.setSize({ _physComponent->Width(), _physComponent->Height() });
-	_sprite.setRotation(rotation);
+	//_sprite.setRotation(rotation);
+	_sprite.setOutlineThickness(2.0f);
+	_sprite.setOutlineColor(sf::Color::White);
 	
 }
 
@@ -22,5 +24,14 @@ void GameObject::draw(sf::RenderTarget & target, sf::RenderStates state) const
 
 void GameObject::Update()
 {
-	_sprite.setPosition(_physComponent->Position() - sf::Vector2f(_physComponent->Width(), -_physComponent->Height()) / 2.0f);
+
+	_sprite.setPosition(_physComponent->TopLeft());
+	_sprite.setRotation(_physComponent->Rotation());
+	_physComponent->DebugRender();
+
+}
+
+PhysicsComponent * GameObject::Physics()
+{
+	return _physComponent;
 }

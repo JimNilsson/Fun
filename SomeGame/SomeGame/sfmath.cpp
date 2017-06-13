@@ -1,5 +1,6 @@
 #include "sfmath.h"
 #include <math.h>
+#define SFM_PI 3.14159265f
 sf::Vector2f sfm::normalize(const sf::Vector2f & v)
 {
 	return v / sqrtf(v.x * v.x + v.y * v.y);
@@ -18,6 +19,12 @@ sf::Vector2f sfm::halfvector(const sf::Vector2f & u, const sf::Vector2f & v)
 float sfm::length(const sf::Vector2f & u)
 {
 	return sqrtf(u.x * u.x + u.y * u.y);
+}
+
+sf::Vector2f sfm::rotateDeg(const sf::Vector2f & v, float degrees)
+{
+	float rad = degrees * (SFM_PI / 180.0f);
+	return sf::Vector2f(cosf(rad)*v.x - sinf(rad)*v.y, sinf(rad)*v.x + cosf(rad)*v.y);
 }
 
 

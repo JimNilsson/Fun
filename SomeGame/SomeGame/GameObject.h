@@ -12,6 +12,7 @@ public:
 
 	virtual void draw(sf::RenderTarget& target, sf::RenderStates state) const;
 	void Update();
+	PhysicsComponent* Physics();
 
 private:
 

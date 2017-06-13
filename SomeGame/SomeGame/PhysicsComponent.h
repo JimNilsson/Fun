@@ -20,6 +20,7 @@ public:
 	void Update(float dt);
 
 	sf::Vector2f Position() const;
+	sf::Vector2f PositionWithOffset() const;
 	sf::Vector2f Velocity() const;
 	sf::Vector2f Acceleration() const;
 	float Mass() const;
@@ -27,6 +28,8 @@ public:
 	int32_t Flags() const;
 	float Width() const;
 	float Height() const;
+	float Rotation() const;
+	sf::Vector2f TopLeft() const;
 
 	void SetPosition(const sf::Vector2f& pos);
 	void SetVelocity(const sf::Vector2f& vel);
@@ -40,12 +43,15 @@ public:
 
 	bool Collision(PhysicsComponent& body);
 	
+	void DebugRender();
 
 private:
 	sf::Vector2f _position;
 	sf::Vector2f _velocity;
 	sf::Vector2f _acceleration;
 	sf::Vector2f _force;
+
+
 	float _mass;
 	float _collisionCoefficient;
 	float _rotation;

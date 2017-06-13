@@ -1,8 +1,9 @@
 #include "PhysicsEngine.h"
 #include "sfmath.h"
-PhysicsEngine::PhysicsEngine() : _gravity({ 0, 100 })
+PhysicsEngine::PhysicsEngine() : _gravity({ 0, 200 })
 {
 	_objects.reserve(_maxObjects);
+	_staticObjects.reserve(_maxStaticObjects);
 }
 
 PhysicsEngine::~PhysicsEngine()
@@ -18,6 +19,15 @@ void PhysicsEngine::Update(float dt)
 		for (auto& so : _staticObjects)
 		{
 			o.Collision(so);
+		}
+	}
+
+	//Check dynamic objects against dynamic objects
+	for (int i = 0; i < _objects.size(); i++)
+	{
+		for (int j = i + 1; j < _objects.size(); j++)
+		{
+			_objects[i].Collision(_objects[j]);
 		}
 	}
 
@@ -47,7 +57,7 @@ PhysicsComponent * PhysicsEngine::CreatePhysicsComponent(const sf::Vector2f & po
 			p.SetHeight(height);
 			p.SetRotation(rotation);
 			p.SetGravityAcc(_gravity);
-
+			
 			return &_objects[_objects.size() - 1];
 		}
 		else
@@ -57,14 +67,14 @@ PhysicsComponent * PhysicsEngine::CreatePhysicsComponent(const sf::Vector2f & po
 	}
 	else
 	{
-		if (_objects.size() < _maxObjects)
+		if (_staticObjects.size() < _maxStaticObjects)
 		{
 			_staticObjects.push_back(PhysicsComponent(position, mass, flags));
 			auto& p = _staticObjects.back();
 			p.SetWidth(width);
 			p.SetHeight(height);
 			p.SetRotation(rotation);
-			p.SetGravityAcc(_gravity);
+			p.SetGravityAcc({ 0,0 });
 
 			return &_staticObjects[_staticObjects.size() - 1];
 		}
