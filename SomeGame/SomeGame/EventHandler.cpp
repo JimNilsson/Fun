@@ -2,7 +2,7 @@
 #include <iostream>
 void EventHandler::Update()
 {
-
+	_mousePress = false;
 	for (auto& status : _keyStatus)
 	{
 		if (status.second & KeyStatus::WAS_PRESSED)
@@ -24,6 +24,16 @@ void EventHandler::Update()
 		else if (ev.type == sf::Event::EventType::KeyReleased)
 		{
 			_keyStatus[ev.key.code] = KeyStatus::WAS_RELEASED;
+		}
+		else if (ev.type == sf::Event::EventType::MouseMoved)
+		{
+			_mousePos = { (float)ev.mouseMove.x, (float)ev.mouseMove.y };
+		}
+		else if (ev.type == sf::Event::EventType::MouseButtonPressed)
+		{
+			_mousePos = { (float)ev.mouseButton.x,(float)ev.mouseButton.y };
+			_mousePress = true;
+
 		}
 		else if (ev.type == sf::Event::Closed)
 		{
@@ -60,4 +70,14 @@ bool EventHandler::KeyRelease(sf::Keyboard::Key keycode) const
 bool EventHandler::WindowClose() const
 {
 	return _close;
+}
+
+sf::Vector2f EventHandler::MousePos() const
+{
+	return _mousePos;
+}
+
+bool EventHandler::LeftMousePress() const
+{
+	return _mousePress;
 }
