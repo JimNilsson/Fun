@@ -244,17 +244,17 @@ bool PhysicsComponent::Collision(PhysicsComponent & body)
 		};
 		Line l[4];
 		l[0].o = topLeftCorner;
-		l[0].d = sfm::normalize(topRightCorner - topLeftCorner);
 		l[0].length = sfm::length(topRightCorner - topLeftCorner);
+		l[0].d = (topRightCorner - topLeftCorner) / l[0].length;
 		l[1].o = topRightCorner;
-		l[1].d = sfm::normalize(bottomRightCorner - topRightCorner);
 		l[1].length = sfm::length(bottomRightCorner - topRightCorner);
+		l[1].d = (bottomRightCorner - topRightCorner) / l[1].length;
 		l[2].o = bottomRightCorner;
-		l[2].d = sfm::normalize(bottomLeftCorner - bottomRightCorner);
 		l[2].length = sfm::length(bottomLeftCorner - bottomRightCorner);
+		l[2].d = (bottomLeftCorner - bottomRightCorner) / l[2].length;
 		l[3].o = bottomLeftCorner;
-		l[3].d = sfm::normalize(topLeftCorner - bottomLeftCorner);
 		l[3].length = sfm::length(topLeftCorner - bottomLeftCorner);
+		l[3].d = (topLeftCorner - bottomLeftCorner) / l[3].length;
 
 		//Find if a part of the line intersects the circle. If it does, the position on the line that is the closest to the center
 		//of the circle is the point which the circle collides with the rect on.
@@ -311,7 +311,7 @@ bool PhysicsComponent::Collision(PhysicsComponent & body)
 	}
 	else if ((_flags & RECT) && (body.Flags() & RECT))
 	{
-
+		//todo...
 	}
 	return false;
 }
