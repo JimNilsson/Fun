@@ -17,6 +17,7 @@ public:
 	bool WindowClose() const;
 	sf::Vector2f MousePos() const;
 	bool LeftMousePress() const;
+	bool RightMousePress() const;
 
 private:
 	sf::RenderWindow* _window;
@@ -31,7 +32,8 @@ private:
 
 	std::map<sf::Keyboard::Key, int32_t> _keyStatus;
 	bool _close = false;
-	bool _mousePress = false;
+	bool _mousePressLeft = false;
+	bool _mousePressRight = false;
 	sf::Vector2f _mousePos;
 	
 };

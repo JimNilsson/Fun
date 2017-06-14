@@ -13,7 +13,7 @@ public:
 	void Update(float dt);
 	void ClearObjects();
 
-	PhysicsComponent* CreatePhysicsComponent(const sf::Vector2f& position, float mass, int32_t flags, float width, float height, float rotation, float collisionCoefficient = 0.80f);
+	PhysicsComponent* CreatePhysicsComponent(const sf::Vector2f& position, float mass, int32_t flags, float width, float height, float rotation, float collisionCoefficient = 0.80f, float frictionCoefficient = 0.20f);
 
 private:
 	std::vector<PhysicsComponent> _objects;

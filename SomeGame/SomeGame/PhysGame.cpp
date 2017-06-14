@@ -6,7 +6,7 @@ PhysGame::PhysGame(Application * app) : IState(app)
 {
 
 
-	_gameObjects.push_back(GameObject(&_physEngine, { 200, 150 }, 140, ROUND, 50, 50, 0));
+	_gameObjects.push_back(GameObject(&_physEngine, { 200, 150 }, 992140, ROUND, 50, 50, 0));
 	//_gameObjects.back().Physics()->SetVelocity({ 50, 0 });
 //	_gameObjects.push_back(GameObject(&_physEngine, { 650, 150 }, 50, ROUND, 100, 100, 0));
 //	_gameObjects.push_back(GameObject(&_physEngine, { 550, 50 }, 10, ROUND, 100, 100, 0));
@@ -41,6 +41,13 @@ void PhysGame::Update()
 		_gameObjects[0].Physics()->SetVelocity(target*4.0f);
 
 	}
+
+	if (_app->Events()->RightMousePress())
+	{
+		sf::Vector2f pos = _app->Events()->MousePos();
+		_gameObjects.push_back(GameObject(&_physEngine, pos, 140, ROUND, 10, 10, 0));
+	}
+
 	if (_app->Events()->KeySinglePress(sf::Keyboard::Escape))
 	{
 		_app->ChangeState(new MenuState(_app));

@@ -16,13 +16,14 @@ void PhysicsComponent::Update(float dt)
 	if ((_flags & (AT_REST | STATIC)))
 		return;
 	
+
+
+
+	_acceleration = _force / _mass;
 	
 	_position = _position + _velocity * dt + _acceleration * dt * dt * 0.5f;
 
 	_velocity = _velocity + _acceleration * dt;
-	_acceleration = _force / _mass;
-
-
 	
 
 }
@@ -55,6 +56,11 @@ inline float PhysicsComponent::Mass() const
 float PhysicsComponent::ResititutionCoefficient() const
 {
 	return _collisionCoefficient;
+}
+
+float PhysicsComponent::FrictionCoefficient() const
+{
+	return _frictionCoefficient;
 }
 
 int32_t PhysicsComponent::Flags() const
@@ -96,7 +102,10 @@ void PhysicsComponent::SetPosition(const sf::Vector2f & pos)
 void PhysicsComponent::SetVelocity(const sf::Vector2f & vel)
 {
 	_flags = _flags & (~AT_REST);
-	_velocity = vel;
+	if (sfm::length(vel) > 10.0f)
+		_velocity = vel;
+	else
+		_velocity = { 0.0f, 0.0f };
 }
 
 void PhysicsComponent::SetForce(const sf::Vector2f & force)
@@ -142,6 +151,21 @@ void PhysicsComponent::SetCollisionCoefficient(float e)
 	_collisionCoefficient = e;
 }
 
+void PhysicsComponent::SetFrictionCoefficient(float f)
+{
+	_frictionCoefficient = f;
+}
+
+void PhysicsComponent::EnableFlag(int32_t flag)
+{
+	_flags |= flag;
+}
+
+void PhysicsComponent::DisableFlag(int32_t flag)
+{
+	_flags = _flags & (~flag);
+}
+
 
 
 bool PhysicsComponent::Collision(PhysicsComponent & body)
@@ -173,7 +197,7 @@ bool PhysicsComponent::Collision(PhysicsComponent & body)
 			float u1p = ((1.0f - e)*body.Mass() / totMass)*v1p + ((body.Mass() - _mass*e) / totMass)*v2p;
 
 			if(!(_flags & STATIC))
-				_velocity = _velocity + (u1p - v1p) * ep;
+				SetVelocity(_velocity + (u1p - v1p) * ep);
 			if(!(body.Flags() & STATIC))
 				body.SetVelocity(body._velocity + (u2p - v2p) * ep);
 
@@ -249,9 +273,9 @@ bool PhysicsComponent::Collision(PhysicsComponent & body)
 				sf::Vector2f ep = sfm::normalize(body.Position() - closestPoint);
 				//Make sure we dont get stuck
 				if (!(_flags & STATIC))
-					_position = _position - ep * (-distance + 1);
+					_position = _position - ep * (-distance + 0);
 				else
-					body.SetPosition(body.Position() + ep * (-distance + 1));
+					body.SetPosition(body.Position() + ep * (-distance + 0));
 
 				//velocity along collision vector before collision
 				float v1p = sfm::dot(_velocity, ep);
@@ -267,11 +291,16 @@ bool PhysicsComponent::Collision(PhysicsComponent & body)
 				en = { -ep.y, ep.x };
 				en = -sfm::dot(sfm::normalize(_velocity + body.Velocity()), en)*en;
 
+				float friction = (_frictionCoefficient + body.FrictionCoefficient()) * 0.5f;
+
 				if (!(_flags & STATIC))
-					_velocity = _velocity + (u1p - v1p) * (ep + en*0.20f);
+					SetVelocity(_velocity + (u1p - v1p) * (ep + en*friction));
 				if (!(body.Flags() & STATIC))
-					body.SetVelocity(body._velocity + (u2p - v2p) * (ep + en*0.20f));
+					body.SetVelocity(body._velocity + (u2p - v2p) * (ep + en*friction));
 				
+		/*		body.EnableFlag(ADJACENT_BELOW);
+				EnableFlag(ADJACENT_BELOW);*/
+
 				//No need to check other lines
 				break;
 			}

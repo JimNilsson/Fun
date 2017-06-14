@@ -8,7 +8,8 @@ enum : int32_t
 	RECT = 1 << 2,
 	STATIC = 1 << 3,
 	AT_REST = 1 << 4,
-	INACTIVE = 1 << 5
+	INACTIVE = 1 << 5,
+	ADJACENT_BELOW = 1 << 6
 };
 
 class PhysicsComponent
@@ -25,6 +26,7 @@ public:
 	sf::Vector2f Acceleration() const;
 	float Mass() const;
 	float ResititutionCoefficient() const;
+	float FrictionCoefficient() const;
 	int32_t Flags() const;
 	float Width() const;
 	float Height() const;
@@ -41,6 +43,9 @@ public:
 	void SetHeight(float height);
 	void SetGravityAcc(const sf::Vector2f& g);
 	void SetCollisionCoefficient(float e);
+	void SetFrictionCoefficient(float f);
+	void EnableFlag(int32_t flag);
+	void DisableFlag(int32_t flag);
 
 	bool Collision(PhysicsComponent& body);
 	
@@ -55,6 +60,7 @@ private:
 
 	float _mass;
 	float _collisionCoefficient;
+	float _frictionCoefficient = 0.2f;
 	float _rotation;
 	int32_t _flags;
 

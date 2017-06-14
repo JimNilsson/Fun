@@ -2,7 +2,8 @@
 #include <iostream>
 void EventHandler::Update()
 {
-	_mousePress = false;
+	_mousePressLeft = false;
+	_mousePressRight = false;
 	for (auto& status : _keyStatus)
 	{
 		if (status.second & KeyStatus::WAS_PRESSED)
@@ -32,8 +33,11 @@ void EventHandler::Update()
 		else if (ev.type == sf::Event::EventType::MouseButtonPressed)
 		{
 			_mousePos = { (float)ev.mouseButton.x,(float)ev.mouseButton.y };
-			_mousePress = true;
-
+			if (ev.mouseButton.button == sf::Mouse::Left)
+				_mousePressLeft = true;
+			else if (ev.mouseButton.button == sf::Mouse::Right)
+				_mousePressRight = true;
+			
 		}
 		else if (ev.type == sf::Event::Closed)
 		{
@@ -79,5 +83,10 @@ sf::Vector2f EventHandler::MousePos() const
 
 bool EventHandler::LeftMousePress() const
 {
-	return _mousePress;
+	return _mousePressLeft;
+}
+
+bool EventHandler::RightMousePress() const
+{
+	return _mousePressRight;
 }

@@ -41,7 +41,7 @@ void PhysicsEngine::ClearObjects()
 	_staticObjects.reserve(1000);
 }
 
-PhysicsComponent * PhysicsEngine::CreatePhysicsComponent(const sf::Vector2f & position, float mass, int32_t flags, float width, float height, float rotation, float collisionCoefficient)
+PhysicsComponent * PhysicsEngine::CreatePhysicsComponent(const sf::Vector2f & position, float mass, int32_t flags, float width, float height, float rotation, float collisionCoefficient, float frictionCoefficient)
 {
 	//Game objects store references to entries in the vector, as such we cannot allow a reallocation to happen since that
 	//would invalidate the references. The restriction to this is that we are limited to a certain number of physics objects.
@@ -58,6 +58,7 @@ PhysicsComponent * PhysicsEngine::CreatePhysicsComponent(const sf::Vector2f & po
 			p.SetRotation(rotation);
 			p.SetGravityAcc(_gravity);
 			p.SetCollisionCoefficient(collisionCoefficient);
+			p.SetFrictionCoefficient(frictionCoefficient);
 			
 			return &_objects[_objects.size() - 1];
 		}
@@ -68,6 +69,7 @@ PhysicsComponent * PhysicsEngine::CreatePhysicsComponent(const sf::Vector2f & po
 	}
 	else
 	{
+		//Yeah gotta refactor this
 		if (_staticObjects.size() < _maxStaticObjects)
 		{
 			_staticObjects.push_back(PhysicsComponent(position, mass, flags));
@@ -77,6 +79,7 @@ PhysicsComponent * PhysicsEngine::CreatePhysicsComponent(const sf::Vector2f & po
 			p.SetRotation(rotation);
 			p.SetGravityAcc({ 0,0 });
 			p.SetCollisionCoefficient(collisionCoefficient);
+			p.SetFrictionCoefficient(frictionCoefficient);
 
 			return &_staticObjects[_staticObjects.size() - 1];
 		}
