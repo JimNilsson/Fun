@@ -6,7 +6,7 @@ PhysGame::PhysGame(Application * app) : IState(app)
 {
 
 
-	_gameObjects.push_back(GameObject(&_physEngine, { 200, 150 }, 992140, ROUND, 50, 50, 0));
+	_gameObjects.push_back(GameObject(&_physEngine, { 200, 150 }, 999992140, ROUND, 50, 50, 0));
 	//_gameObjects.back().Physics()->SetVelocity({ 50, 0 });
 //	_gameObjects.push_back(GameObject(&_physEngine, { 650, 150 }, 50, ROUND, 100, 100, 0));
 //	_gameObjects.push_back(GameObject(&_physEngine, { 550, 50 }, 10, ROUND, 100, 100, 0));

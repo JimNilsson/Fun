@@ -181,7 +181,7 @@ bool PhysicsComponent::Collision(PhysicsComponent & body)
 		{
 			//We have collision
 			//First move them apart as to not get stuck
-			if (!(_flags & STATIC))
+			if (!(_flags & STATIC) &&sfm::length(_velocity) > sfm::length(body.Velocity()))
 				_position = _position + ep * ((_width + body._width)*0.5f - distance + 2);
 			else
 				body.SetPosition(body._position - ep * ((_width + body._width)*0.5f - distance + 2));
@@ -193,8 +193,9 @@ bool PhysicsComponent::Collision(PhysicsComponent & body)
 
 			//velocity along collision vector after collision
 			float e = (_collisionCoefficient + body.ResititutionCoefficient()) * 0.5f;
-			float u2p = ((_mass - body.Mass()*e) / totMass)*v1p + (((1.0f - e)*body.Mass()) / totMass)*v2p;
-			float u1p = ((1.0f - e)*body.Mass() / totMass)*v1p + ((body.Mass() - _mass*e) / totMass)*v2p;
+			float u1p = (e * body.Mass() * (v2p - v1p) + _mass * v1p + body.Mass()*v2p) / totMass;
+			float u2p = (e*_mass * (v1p - v2p) + _mass*v1p + body.Mass() * v2p) / totMass;
+			
 
 			if(!(_flags & STATIC))
 				SetVelocity(_velocity + (u1p - v1p) * ep);
@@ -284,8 +285,8 @@ bool PhysicsComponent::Collision(PhysicsComponent & body)
 
 				//velocity along collision vector after collision
 				float e = (_collisionCoefficient + body.ResititutionCoefficient()) * 0.5f;
-				float u1p = ((_mass - body.Mass()*e) / totMass)*v1p + (((1 - e)*body.Mass()) / totMass)*v2p;
-				float u2p = ((1 - e)*body.Mass() / totMass)*v1p + ((body.Mass() - _mass*e) / totMass)*v2p;
+				float u1p = (e * body.Mass() * (v2p - v1p) + _mass * v1p + body.Mass()*v2p) / totMass;
+				float u2p = (e*_mass * (v1p - v2p) + _mass*v1p + body.Mass() * v2p) / totMass;
 
 				sf::Vector2f en;
 				en = { -ep.y, ep.x };
