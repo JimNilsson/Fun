@@ -40,6 +40,7 @@ public:
 	void SetWidth(float width);
 	void SetHeight(float height);
 	void SetGravityAcc(const sf::Vector2f& g);
+	void SetCollisionCoefficient(float e);
 
 	bool Collision(PhysicsComponent& body);
 	

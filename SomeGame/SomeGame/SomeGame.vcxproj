@@ -133,6 +133,7 @@
     <ClCompile Include="Snake.cpp" />
     <ClCompile Include="SnakeGameState.cpp" />
     <ClCompile Include="TextureManager.cpp" />
+    <ClCompile Include="WalkableGround.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="EventHandler.h" />
@@ -150,6 +151,7 @@
     <ClInclude Include="Snake.h" />
     <ClInclude Include="SnakeGameState.h" />
     <ClInclude Include="TextureManager.h" />
+    <ClInclude Include="WalkableGround.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

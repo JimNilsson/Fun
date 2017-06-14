@@ -60,20 +60,23 @@
     <ClCompile Include="PillPuzzleState.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="PhysGame.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="PhysicsComponent.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="PhysicsEngine.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="sfmath.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="PhysGame.cpp">
+      <Filter>Source Files\PhysGame</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysicsComponent.cpp">
+      <Filter>Source Files\PhysGame</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysicsEngine.cpp">
+      <Filter>Source Files\PhysGame</Filter>
+    </ClCompile>
     <ClCompile Include="GameObject.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\PhysGame</Filter>
+    </ClCompile>
+    <ClCompile Include="WalkableGround.cpp">
+      <Filter>Source Files\PhysGame</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -120,6 +123,9 @@
       <Filter>Header Files\PhysGame</Filter>
     </ClInclude>
     <ClInclude Include="GameObject.h">
+      <Filter>Header Files\PhysGame</Filter>
+    </ClInclude>
+    <ClInclude Include="WalkableGround.h">
       <Filter>Header Files\PhysGame</Filter>
     </ClInclude>
   </ItemGroup>

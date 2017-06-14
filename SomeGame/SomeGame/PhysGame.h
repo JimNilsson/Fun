@@ -6,7 +6,7 @@
 #include "GameObject.h"
 #include <vector>
 
-class EventHandler;
+#include "WalkableGround.h"
 
 class PhysGame : public IState
 {
@@ -18,9 +18,9 @@ public:
 	virtual void Draw();
 
 private:
+	std::vector<WalkableGround> _ground;
 	std::vector<GameObject> _gameObjects;
 	PhysicsEngine _physEngine;
-	EventHandler* Events;
 	sf::Vector2f _gravity;
 	sf::Clock _clock;
 

@@ -4,7 +4,7 @@
 PhysicsComponent::PhysicsComponent(const sf::Vector2f& position, float mass, int32_t flags) : _position(position), _mass(mass), _velocity(0,0), _acceleration(0,0), _force(0,0), _flags(flags), _collisionCoefficient(0.80f)
 {
 	if (_flags & STATIC)
-		_mass = 9999999.0f;
+		_mass = 9999999999.0f;
 }
 
 PhysicsComponent::~PhysicsComponent()
@@ -137,6 +137,11 @@ void PhysicsComponent::SetGravityAcc(const sf::Vector2f & g)
 	_force = _mass * g;
 }
 
+void PhysicsComponent::SetCollisionCoefficient(float e)
+{
+	_collisionCoefficient = e;
+}
+
 
 
 bool PhysicsComponent::Collision(PhysicsComponent & body)
@@ -164,8 +169,8 @@ bool PhysicsComponent::Collision(PhysicsComponent & body)
 
 			//velocity along collision vector after collision
 			float e = (_collisionCoefficient + body.ResititutionCoefficient()) * 0.5f;
-			float u1p = ((_mass - body.Mass()*e) / totMass)*v1p + (((1 - e)*body.Mass()) / totMass)*v2p;
-			float u2p = ((1 - e)*body.Mass() / totMass)*v1p + ((body.Mass() - _mass*e) / totMass)*v2p;
+			float u2p = ((_mass - body.Mass()*e) / totMass)*v1p + (((1.0f - e)*body.Mass()) / totMass)*v2p;
+			float u1p = ((1.0f - e)*body.Mass() / totMass)*v1p + ((body.Mass() - _mass*e) / totMass)*v2p;
 
 			if(!(_flags & STATIC))
 				_velocity = _velocity + (u1p - v1p) * ep;
@@ -258,10 +263,14 @@ bool PhysicsComponent::Collision(PhysicsComponent & body)
 				float u1p = ((_mass - body.Mass()*e) / totMass)*v1p + (((1 - e)*body.Mass()) / totMass)*v2p;
 				float u2p = ((1 - e)*body.Mass() / totMass)*v1p + ((body.Mass() - _mass*e) / totMass)*v2p;
 
+				sf::Vector2f en;
+				en = { -ep.y, ep.x };
+				en = -sfm::dot(sfm::normalize(_velocity + body.Velocity()), en)*en;
+
 				if (!(_flags & STATIC))
-					_velocity = _velocity + (u1p - v1p) * ep;
+					_velocity = _velocity + (u1p - v1p) * (ep + en*0.20f);
 				if (!(body.Flags() & STATIC))
-					body.SetVelocity(body._velocity + (u2p - v2p) * ep);
+					body.SetVelocity(body._velocity + (u2p - v2p) * (ep + en*0.20f));
 				
 				//No need to check other lines
 				break;
@@ -315,5 +324,6 @@ void PhysicsComponent::DebugRender()
 	va.setPrimitiveType(sf::PrimitiveType::LineStrip);
 	for (int i = 0; i < 4; i++)
 		va.append(v[i]);
+	va.append(v[0]);
 	Application::GetInstance()->Render(va);
 }
