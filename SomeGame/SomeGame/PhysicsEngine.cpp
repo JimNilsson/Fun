@@ -41,6 +41,12 @@ void PhysicsEngine::ClearObjects()
 	_staticObjects.reserve(1000);
 }
 
+void PhysicsEngine::RenderDebug()
+{
+	for (auto& o : _objects)
+		o.DebugRender();
+}
+
 PhysicsComponent * PhysicsEngine::CreatePhysicsComponent(const sf::Vector2f & position, float mass, int32_t flags, float width, float height, float rotation, float collisionCoefficient, float frictionCoefficient)
 {
 	//Game objects store references to entries in the vector, as such we cannot allow a reallocation to happen since that

@@ -9,7 +9,7 @@ enum : int32_t
 	STATIC = 1 << 3,
 	AT_REST = 1 << 4,
 	INACTIVE = 1 << 5,
-	ADJACENT_BELOW = 1 << 6
+	HAS_COLLIDED = 1 << 6
 };
 
 class PhysicsComponent
@@ -56,6 +56,8 @@ private:
 	sf::Vector2f _velocity;
 	sf::Vector2f _acceleration;
 	sf::Vector2f _force;
+
+	sf::Vector2f _epOfLastCollision;
 
 
 	float _mass;

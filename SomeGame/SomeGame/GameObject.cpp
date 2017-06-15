@@ -27,7 +27,6 @@ void GameObject::Update()
 
 	_sprite.setPosition(_physComponent->TopLeft());
 	_sprite.setRotation(_physComponent->Rotation());
-//	_physComponent->DebugRender();
 
 }
 

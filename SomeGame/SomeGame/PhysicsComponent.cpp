@@ -1,6 +1,7 @@
 #include "PhysicsComponent.h"
 #include "sfmath.h"
 #include "Application.h"
+#include <math.h>
 PhysicsComponent::PhysicsComponent(const sf::Vector2f& position, float mass, int32_t flags) : _position(position), _mass(mass), _velocity(0,0), _acceleration(0,0), _force(0,0), _flags(flags), _collisionCoefficient(0.80f)
 {
 	if (_flags & STATIC)
@@ -16,9 +17,6 @@ void PhysicsComponent::Update(float dt)
 	if ((_flags & (AT_REST | STATIC)))
 		return;
 	
-
-
-
 	_acceleration = _force / _mass;
 	
 	_position = _position + _velocity * dt + _acceleration * dt * dt * 0.5f;
@@ -27,7 +25,7 @@ void PhysicsComponent::Update(float dt)
 	
 
 }
-
+#pragma region getsandsets
 inline sf::Vector2f PhysicsComponent::Position() const
 {
 	return _position;
@@ -165,7 +163,7 @@ void PhysicsComponent::DisableFlag(int32_t flag)
 {
 	_flags = _flags & (~flag);
 }
-
+#pragma endregion
 
 
 bool PhysicsComponent::Collision(PhysicsComponent & body)
@@ -299,9 +297,11 @@ bool PhysicsComponent::Collision(PhysicsComponent & body)
 				if (!(body.Flags() & STATIC))
 					body.SetVelocity(body._velocity + (u2p - v2p) * (ep + en*friction));
 				
-		/*		body.EnableFlag(ADJACENT_BELOW);
-				EnableFlag(ADJACENT_BELOW);*/
-
+				body.EnableFlag(HAS_COLLIDED);
+				body._epOfLastCollision = ep;
+				EnableFlag(HAS_COLLIDED);
+				_epOfLastCollision = ep;
+				
 				//No need to check other lines
 				break;
 			}
@@ -355,5 +355,34 @@ void PhysicsComponent::DebugRender()
 	for (int i = 0; i < 4; i++)
 		va.append(v[i]);
 	va.append(v[0]);
+
+	//Arrow of the velocity
+	sf::VertexArray va2;
+	va2.setPrimitiveType(sf::PrimitiveType::LinesStrip);
+	sf::Vertex v2[2];
+	for (auto& v : v2)
+		v.color = sf::Color::Green;
+	sf::Vector2f velvec = sfm::normalize(_velocity) * 50.0f;
+	v2[0].position = _position;
+	v2[1].position = _position + velvec;
+	for (auto& v : v2)
+		va2.append(v);
+
+	//Arrow of the acceleration
+	sf::VertexArray va3;
+	va3.setPrimitiveType(sf::PrimitiveType::LinesStrip);
+	sf::Vertex v3[2];
+	for (auto& v : v3)
+		v.color = sf::Color::Red;
+	sf::Vector2f accvec = sfm::normalize(_acceleration) * 50.0f;
+	v3[0].position = _position;
+	v3[1].position = _position + accvec;
+	for (auto& v : v3)
+		va3.append(v);
+	
+	
+
 	Application::GetInstance()->Render(va);
+	Application::GetInstance()->Render(va2);
+	Application::GetInstance()->Render(va3);
 }
