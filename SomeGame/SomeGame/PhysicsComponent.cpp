@@ -17,6 +17,45 @@ void PhysicsComponent::Update(float dt)
 	if ((_flags & (AT_REST | STATIC)))
 		return;
 	
+
+	if (_flags & HAS_COLLIDED)
+	{
+		float vel = sfm::length(_velocity);
+		if (vel > 1.0f)
+		{
+			sf::Vector2f nvel = _velocity / vel;
+			if (fabs(sfm::dot(nvel, _epOfLastCollision)) < 0.01f)
+			{
+				EnableFlag(GLIDING);
+				_force = _force - _epOfLastCollision * sfm::dot(_force, _epOfLastCollision);
+				float force = sfm::length(_force);
+				if (force > 1.0f)
+				{
+					sf::Vector2f dir = sfm::normalize(_force);
+					_velocity = dir * sfm::dot(dir, _velocity);
+				}
+				_force += _frictionCoefficient * 20.0f * _mass * -nvel;
+			}
+		}
+		else
+		{
+			EnableFlag(AT_REST);
+		}
+		DisableFlag(HAS_COLLIDED);
+
+	}
+	if (_flags & GLIDING)
+	{
+		if (sfm::length(_velocity) < 1.0f)
+		{
+			_velocity = { 0.0f, 0.0f };
+			_force = { 0.0f, 0.0f };
+			DisableFlag(GLIDING);
+			EnableFlag(AT_REST);
+			return;
+		}
+	}
+
 	_acceleration = _force / _mass;
 	
 	_position = _position + _velocity * dt + _acceleration * dt * dt * 0.5f;
@@ -163,6 +202,10 @@ void PhysicsComponent::DisableFlag(int32_t flag)
 {
 	_flags = _flags & (~flag);
 }
+void PhysicsComponent::ToggleFlag(int32_t flag)
+{
+	_flags ^= flag;
+}
 #pragma endregion
 
 
@@ -199,13 +242,14 @@ bool PhysicsComponent::Collision(PhysicsComponent & body)
 				SetVelocity(_velocity + (u1p - v1p) * ep);
 			if(!(body.Flags() & STATIC))
 				body.SetVelocity(body._velocity + (u2p - v2p) * ep);
-
+			
+			return true;
 		}
 		
 	}
 	else if ((_flags & ROUND) && (body.Flags() & RECT))
 	{
-		body.Collision(*this);
+		return body.Collision(*this);
 	}
 	else if ((_flags & RECT) && (body.Flags() & ROUND))
 	{
@@ -301,9 +345,8 @@ bool PhysicsComponent::Collision(PhysicsComponent & body)
 				body._epOfLastCollision = ep;
 				EnableFlag(HAS_COLLIDED);
 				_epOfLastCollision = ep;
-				
-				//No need to check other lines
-				break;
+				return true;
+
 			}
 		}
 

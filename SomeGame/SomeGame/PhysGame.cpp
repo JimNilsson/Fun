@@ -6,11 +6,11 @@ PhysGame::PhysGame(Application * app) : IState(app)
 {
 
 
-	_gameObjects.push_back(GameObject(&_physEngine, { 200, 150 }, 999992140, ROUND, 50, 50, 0));
+	_gameObjects.push_back(GameObject(&_physEngine, { 200, 150 }, 5000, ROUND, 50, 50, 0));
 	//_gameObjects.back().Physics()->SetVelocity({ 50, 0 });
 //	_gameObjects.push_back(GameObject(&_physEngine, { 650, 150 }, 50, ROUND, 100, 100, 0));
 //	_gameObjects.push_back(GameObject(&_physEngine, { 550, 50 }, 10, ROUND, 100, 100, 0));
-	//_gameObjects.push_back(GameObject(&_physEngine, { 200, 400 }, 100, ROUND | STATIC, 100, 100, 0));
+	_gameObjects.push_back(GameObject(&_physEngine, { 400, 320 }, 100, ROUND | STATIC, 20, 20, 0));
 	//_gameObjects.push_back(GameObject(&_physEngine, { 100, 400 }, 100, ROUND | STATIC, 100, 100, 0));
 	//_gameObjects.push_back(GameObject(&_physEngine, { 400, 400 }, 100, ROUND | STATIC, 100, 100, 0));
 	//_gameObjects.push_back(GameObject(&_physEngine, { 500, 400 }, 100, ROUND | STATIC, 100, 100, 0));
@@ -46,7 +46,7 @@ void PhysGame::Update()
 	if (_app->Events()->RightMousePress())
 	{
 		sf::Vector2f pos = _app->Events()->MousePos();
-		_gameObjects.push_back(GameObject(&_physEngine, pos, 140, ROUND, 10, 10, 0));
+		_gameObjects.push_back(GameObject(&_physEngine, pos, 1, ROUND, 10, 10, 0));
 	}
 
 	if (_app->Events()->KeySinglePress(sf::Keyboard::Escape))

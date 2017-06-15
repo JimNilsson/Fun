@@ -9,7 +9,8 @@ enum : int32_t
 	STATIC = 1 << 3,
 	AT_REST = 1 << 4,
 	INACTIVE = 1 << 5,
-	HAS_COLLIDED = 1 << 6
+	HAS_COLLIDED = 1 << 6,
+	GLIDING = 1 << 7
 };
 
 class PhysicsComponent
@@ -46,6 +47,7 @@ public:
 	void SetFrictionCoefficient(float f);
 	void EnableFlag(int32_t flag);
 	void DisableFlag(int32_t flag);
+	void ToggleFlag(int32_t flag);
 
 	bool Collision(PhysicsComponent& body);
 	

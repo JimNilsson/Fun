@@ -4,6 +4,8 @@ PhysicsEngine::PhysicsEngine() : _gravity({ 0, 200 })
 {
 	_objects.reserve(_maxObjects);
 	_staticObjects.reserve(_maxStaticObjects);
+	_contactCache.resize(_maxObjects);
+	memset(_contactCache.data(), -1, _contactCache.size() * sizeof(int));
 }
 
 PhysicsEngine::~PhysicsEngine()
@@ -12,14 +14,49 @@ PhysicsEngine::~PhysicsEngine()
 
 void PhysicsEngine::Update(float dt)
 {
+	_frame++;
+	////Attraction test...
+	//for (auto &o : _objects)
+	//{
+	//	sf::Vector2f center = { 400.0f, 320.0f };
+	//	sf::Vector2f forceVec = center - o.Position();
+	//	float dist = sfm::length(forceVec);
+	//	forceVec /= dist;
+	//	forceVec *= 1000000000.0f;
+	//	dist = dist * dist;
+	//	float mass = o.Mass();
+	//	forceVec /= dist;
+	//	o.SetForce(forceVec + _gravity * mass);
+
+
+	//}
 	//Update dynamic objects and check collision against static objects
+	int indexD = 0;
 	for (auto& o : _objects)
 	{
 		o.Update(dt);
+		int indexS = 0;
 		for (auto& so : _staticObjects)
 		{
-			o.Collision(so);
+			if (_contactCache[indexD] != indexS)
+			{
+				if (o.Collision(so))
+				{
+					_contactCache[indexD] = indexS;
+					o.SetGravityAcc(_gravity);
+					break;
+				}
+			}
+			indexS++;
 		}
+		indexD++;
+	}
+	if (_frame == 10)
+	{
+		memset(_contactCache.data(), -1, _objects.size() * sizeof(int));
+		//for (auto& o : _objects)
+		//	o.DisableFlag(HAS_COLLIDED);
+		_frame = 0;
 	}
 
 	//Check dynamic objects against dynamic objects
@@ -27,7 +64,11 @@ void PhysicsEngine::Update(float dt)
 	{
 		for (int j = i + 1; j < _objects.size(); j++)
 		{
-			_objects[i].Collision(_objects[j]);
+			if (_objects[i].Collision(_objects[j]))
+			{
+				_objects[i].SetGravityAcc(_gravity);
+				_objects[j].SetGravityAcc(_gravity);
+			}
 		}
 	}
 
