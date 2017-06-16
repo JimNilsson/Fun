@@ -19,6 +19,8 @@ public:
 	sf::Vector2f MousePos() const;
 	bool LeftMousePress() const;
 	bool RightMousePress() const;
+	bool MouseMoved() const;
+	
 
 private:
 	sf::RenderWindow* _window;
@@ -36,6 +38,7 @@ private:
 	bool _resize = false;
 	bool _mousePressLeft = false;
 	bool _mousePressRight = false;
+	bool _mouseMove = false;
 	sf::Vector2f _mousePos;
 	
 };

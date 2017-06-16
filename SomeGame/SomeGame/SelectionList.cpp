@@ -107,10 +107,44 @@ int SelectionList::Update()
 		}	
 	}
 
+	if (events->LeftMousePress())
+	{
+		sf::Vector2f mpos = events->MousePos();
+		int i = 0;
+		for (auto& item : _items)
+		{
+			if (item.text.getGlobalBounds().contains(mpos))
+			{
+				if (item.callback != nullptr)
+				{
+					item.callback();
+				}
+				break;
+			}
+			i++;
+		}
+
+	}
+
 	if (events->KeySinglePress(sf::Keyboard::Down))
 		_selectedItem = (_selectedItem + 1) % _items.size();
 	if(events->KeySinglePress(sf::Keyboard::Up))
 		_selectedItem = (_selectedItem + _items.size() - 1) % _items.size();
+
+	if (events->MouseMoved())
+	{
+		sf::Vector2f mpos = events->MousePos();
+		int i = 0;
+		for (auto& item : _items)
+		{
+			if (item.text.getGlobalBounds().contains(mpos))
+			{
+				_selectedItem = i;
+				break;
+			}
+			i++;
+		}
+	}
 
 	_items[_selectedItem].text.setFillColor(sf::Color::Yellow);
 

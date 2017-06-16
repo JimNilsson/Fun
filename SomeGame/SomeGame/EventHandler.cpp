@@ -4,6 +4,9 @@ void EventHandler::Update()
 {
 	_mousePressLeft = false;
 	_mousePressRight = false;
+	_mouseMove = false;
+	_resize = false;
+	_close = false;
 	for (auto& status : _keyStatus)
 	{
 		if (status.second & KeyStatus::WAS_PRESSED)
@@ -29,6 +32,7 @@ void EventHandler::Update()
 		else if (ev.type == sf::Event::EventType::MouseMoved)
 		{
 			_mousePos = _window->mapPixelToCoords({ ev.mouseMove.x, ev.mouseMove.y });
+			_mouseMove = true;
 		}
 		else if (ev.type == sf::Event::EventType::MouseButtonPressed)
 		{
@@ -101,4 +105,9 @@ bool EventHandler::LeftMousePress() const
 bool EventHandler::RightMousePress() const
 {
 	return _mousePressRight;
+}
+
+bool EventHandler::MouseMoved() const
+{
+	return _mouseMove;
 }
