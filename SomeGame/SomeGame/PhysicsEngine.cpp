@@ -6,6 +6,7 @@ PhysicsEngine::PhysicsEngine() : _gravity({ 0, 200 })
 	_staticObjects.reserve(_maxStaticObjects);
 	_contactCache.resize(_maxObjects);
 	memset(_contactCache.data(), -1, _contactCache.size() * sizeof(int));
+	PhysicsComponent::_gravity = _gravity;
 }
 
 PhysicsEngine::~PhysicsEngine()
@@ -43,7 +44,7 @@ void PhysicsEngine::Update(float dt)
 				if (o.Collision(so))
 				{
 					_contactCache[indexD] = indexS;
-					o.SetGravityAcc(_gravity);
+					o.DisableFlag(GLIDING);
 					break;
 				}
 			}
@@ -66,8 +67,8 @@ void PhysicsEngine::Update(float dt)
 		{
 			if (_objects[i].Collision(_objects[j]))
 			{
-				_objects[i].SetGravityAcc(_gravity);
-				_objects[j].SetGravityAcc(_gravity);
+				_objects[i].DisableFlag(GLIDING);
+				_objects[j].DisableFlag(GLIDING);
 			}
 		}
 	}

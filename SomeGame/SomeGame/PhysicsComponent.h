@@ -52,7 +52,7 @@ public:
 	bool Collision(PhysicsComponent& body);
 	
 	void DebugRender();
-
+	static sf::Vector2f _gravity;
 private:
 	sf::Vector2f _position;
 	sf::Vector2f _velocity;

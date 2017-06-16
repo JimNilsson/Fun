@@ -2,6 +2,7 @@
 #include "sfmath.h"
 #include "Application.h"
 #include <math.h>
+sf::Vector2f PhysicsComponent::_gravity = { 0.0f, 200.0f };
 PhysicsComponent::PhysicsComponent(const sf::Vector2f& position, float mass, int32_t flags) : _position(position), _mass(mass), _velocity(0,0), _acceleration(0,0), _force(0,0), _flags(flags), _collisionCoefficient(0.80f)
 {
 	if (_flags & STATIC)
@@ -17,6 +18,8 @@ void PhysicsComponent::Update(float dt)
 	if ((_flags & (AT_REST | STATIC)))
 		return;
 	
+	if (!(_flags & GLIDING))
+		_force = _mass * _gravity;
 
 	if (_flags & HAS_COLLIDED)
 	{
@@ -50,6 +53,7 @@ void PhysicsComponent::Update(float dt)
 		{
 			_velocity = { 0.0f, 0.0f };
 			_force = { 0.0f, 0.0f };
+			_acceleration = { 0.0f, 0.0f };
 			DisableFlag(GLIDING);
 			EnableFlag(AT_REST);
 			return;
