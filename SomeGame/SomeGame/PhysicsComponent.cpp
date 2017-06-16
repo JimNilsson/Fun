@@ -37,7 +37,7 @@ void PhysicsComponent::Update(float dt)
 					sf::Vector2f dir = sfm::normalize(_force);
 					_velocity = dir * sfm::dot(dir, _velocity);
 				}
-				_force += _frictionCoefficient * 20.0f * _mass * -nvel;
+				_force += _frictionCoefficient * 1.0f * _mass * -sfm::dot(_epOfLastCollision, _acceleration) * -nvel;
 			}
 		}
 		else
@@ -355,7 +355,9 @@ bool PhysicsComponent::Collision(PhysicsComponent & body)
 				sf::Vector2f en;
 				en = { -ep.y, ep.x };
 				en = -sfm::dot(sfm::normalize(_velocity + body.Velocity()), en)*en;
-
+				float enLen = sfm::length(en);
+				if (enLen > 0.01f)
+					en /= enLen;
 				float friction = (_frictionCoefficient + body.FrictionCoefficient()) * 0.5f;
 
 				if (!(_flags & STATIC))
