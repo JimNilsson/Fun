@@ -25,6 +25,7 @@ public:
 
 	void Update();
 	void Draw();
+	sf::View& View();
 
 	void Render(sf::Drawable& d);
 
@@ -34,12 +35,13 @@ public:
 	TextureManager* Textures();
 	FontManager* Fonts();
 	EventHandler* Events();
-
+	
 
 private:
 	Application();
 	~Application();
 	sf::RenderWindow _window;
+	sf::View _view;
 	std::vector<IState*> _states;
 	IState* _pendingStateChange = nullptr;
 	bool _pendingPop = false;

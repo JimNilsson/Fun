@@ -28,11 +28,11 @@ void EventHandler::Update()
 		}
 		else if (ev.type == sf::Event::EventType::MouseMoved)
 		{
-			_mousePos = { (float)ev.mouseMove.x, (float)ev.mouseMove.y };
+			_mousePos = _window->mapPixelToCoords({ ev.mouseMove.x, ev.mouseMove.y });
 		}
 		else if (ev.type == sf::Event::EventType::MouseButtonPressed)
 		{
-			_mousePos = { (float)ev.mouseButton.x,(float)ev.mouseButton.y };
+			_mousePos = _window->mapPixelToCoords( {ev.mouseButton.x,ev.mouseButton.y });
 			if (ev.mouseButton.button == sf::Mouse::Left)
 				_mousePressLeft = true;
 			else if (ev.mouseButton.button == sf::Mouse::Right)
@@ -42,6 +42,13 @@ void EventHandler::Update()
 		else if (ev.type == sf::Event::Closed)
 		{
 			_close = true;
+		}
+		else if (ev.type == sf::Event::Resized)
+		{
+			sf::View v = _window->getView();
+			v.setSize({ (float)ev.size.width, (float)ev.size.height });
+			_window->setView(v);
+			_resize = true;
 		}
 	}
 	
@@ -74,6 +81,11 @@ bool EventHandler::KeyRelease(sf::Keyboard::Key keycode) const
 bool EventHandler::WindowClose() const
 {
 	return _close;
+}
+
+bool EventHandler::Resized() const
+{
+	return _resize;
 }
 
 sf::Vector2f EventHandler::MousePos() const

@@ -25,6 +25,7 @@ void Application::Init()
 	_width = 800;
 	_height = 640;
 	_window.create(sf::VideoMode(_width, _height), "Some Game");
+	_view = _window.getView();
 	_eventHandler = new EventHandler(&_window);
 	_textureManager = new TextureManager();
 	_fontManager = new FontManager();
@@ -77,18 +78,27 @@ void Application::Update()
 		_states.clear();
 		_states.push_back(_pendingStateChange);
 		_pendingStateChange = nullptr;
+		_view = _window.getDefaultView();
 	}
 	_eventHandler->Update();
 	if (_eventHandler->WindowClose())
 		Quit();
+	if (_eventHandler->Resized())
+		_view = _window.getView();
 	_states.back()->Update();
 }
 
 void Application::Draw()
 {
+	_window.setView(_view);
 	_states.back()->Draw();
 	_window.display();
 	_window.clear();
+}
+
+sf::View & Application::View()
+{
+	return _view;
 }
 
 void Application::Render(sf::Drawable & d)

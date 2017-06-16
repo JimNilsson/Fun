@@ -54,6 +54,8 @@ void PhysGame::Update()
 	{
 		_app->ChangeState(new MenuState(_app));
 	}
+	if (_app->Events()->KeyDown(sf::Keyboard::Right))
+		_app->View().move({ 10.0f * dt, 0.0f });
 }
 
 void PhysGame::Draw()
