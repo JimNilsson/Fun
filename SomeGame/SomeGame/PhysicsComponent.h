@@ -32,10 +32,12 @@ public:
 	float Width() const;
 	float Height() const;
 	float Rotation() const;
+	float AngularVelocity() const;
 	sf::Vector2f TopLeft() const;
 
 	void SetPosition(const sf::Vector2f& pos);
 	void SetVelocity(const sf::Vector2f& vel);
+	void SetAngularVelocity(float angvel);
 	void SetForce(const sf::Vector2f& force);
 	void AddForce(const sf::Vector2f& force);
 	void SetRotation(float rotation);
@@ -66,6 +68,8 @@ private:
 	float _collisionCoefficient;
 	float _frictionCoefficient = 0.2f;
 	float _rotation;
+	float _angularVelocity; //degrees/s. Negative values are counter clockwise
+	float _angularAcceleration;
 	int32_t _flags;
 
 	

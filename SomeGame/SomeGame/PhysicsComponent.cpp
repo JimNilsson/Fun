@@ -3,7 +3,7 @@
 #include "Application.h"
 #include <math.h>
 sf::Vector2f PhysicsComponent::_gravity = { 0.0f, 200.0f };
-PhysicsComponent::PhysicsComponent(const sf::Vector2f& position, float mass, int32_t flags) : _position(position), _mass(mass), _velocity(0,0), _acceleration(0,0), _force(0,0), _flags(flags), _collisionCoefficient(0.80f)
+PhysicsComponent::PhysicsComponent(const sf::Vector2f& position, float mass, int32_t flags) : _position(position), _mass(mass), _velocity(0,0), _acceleration(0,0), _force(0,0), _flags(flags), _collisionCoefficient(0.80f), _angularVelocity(0.0f), _angularAcceleration(0.0f)
 {
 	if (_flags & STATIC)
 		_mass = 9999999999.0f;
@@ -65,6 +65,13 @@ void PhysicsComponent::Update(float dt)
 	_position = _position + _velocity * dt + _acceleration * dt * dt * 0.5f;
 
 	_velocity = _velocity + _acceleration * dt;
+
+	_rotation += _angularVelocity * dt + _angularAcceleration * dt * dt * 0.5f;
+	if (_rotation < -360.0f)
+		_rotation += 360.0f;
+	if (_rotation > 360.0f)
+		_rotation -= 360.0f;
+
 	
 
 }
@@ -124,6 +131,11 @@ float PhysicsComponent::Rotation() const
 	return _rotation;
 }
 
+float PhysicsComponent::AngularVelocity() const
+{
+	return _angularVelocity;
+}
+
 sf::Vector2f PhysicsComponent::TopLeft() const
 {
 	sf::Vector2f topLeftCorner = _position - sf::Vector2f(_width * 0.5f, _height * 0.5f);
@@ -147,6 +159,12 @@ void PhysicsComponent::SetVelocity(const sf::Vector2f & vel)
 		_velocity = vel;
 	else
 		_velocity = { 0.0f, 0.0f };
+}
+
+void PhysicsComponent::SetAngularVelocity(float angvel)
+{
+	_flags = _flags & (~AT_REST);
+	_angularVelocity = angvel;
 }
 
 void PhysicsComponent::SetForce(const sf::Vector2f & force)
@@ -320,9 +338,9 @@ bool PhysicsComponent::Collision(PhysicsComponent & body)
 				sf::Vector2f ep = sfm::normalize(body.Position() - closestPoint);
 				//Make sure we dont get stuck
 				if (!(_flags & STATIC))
-					_position = _position - ep * (-distance + 0);
+					SetPosition(_position - ep * (-distance));
 				else
-					body.SetPosition(body.Position() + ep * (-distance + 0));
+					body.SetPosition(body.Position() + ep * -distance);
 
 				//velocity along collision vector before collision
 				float v1p = sfm::dot(_velocity, ep);
@@ -341,9 +359,14 @@ bool PhysicsComponent::Collision(PhysicsComponent & body)
 				float friction = (_frictionCoefficient + body.FrictionCoefficient()) * 0.5f;
 
 				if (!(_flags & STATIC))
+				{
 					SetVelocity(_velocity + (u1p - v1p) * (ep + en*friction));
+				}
 				if (!(body.Flags() & STATIC))
+				{
 					body.SetVelocity(body._velocity + (u2p - v2p) * (ep + en*friction));
+				//	body.SetAngularVelocity(body._angularVelocity + 5.0f*friction*(u2p-v2p) / body.Width());
+				}
 				
 				body.EnableFlag(HAS_COLLIDED);
 				body._epOfLastCollision = ep;
