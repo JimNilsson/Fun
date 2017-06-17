@@ -300,12 +300,7 @@ bool PhysicsComponent::Collision(PhysicsComponent & body)
 		bottomRightCorner = _position + bottomRightCorner;
 
 		//Lines tl->tr, tr->br, br->bl, bl->tl
-		struct Line
-		{
-			sf::Vector2f o;
-			sf::Vector2f d;
-			float length;
-		};
+
 		Line l[4];
 		l[0].o = topLeftCorner;
 		l[0].length = sfm::length(topRightCorner - topLeftCorner);
@@ -383,7 +378,33 @@ bool PhysicsComponent::Collision(PhysicsComponent & body)
 	}
 	else if ((_flags & RECT) && (body.Flags() & RECT))
 	{
-		//todo...
+		PointLine theseLines[4];
+		PointLine bodyLines[4];
+		_GetLines(theseLines);
+		body._GetLines(bodyLines);
+		std::vector<sf::Vector2f> poíntsOfIntersection;
+		for (int i = 0; i < 4; i++)
+		{
+			for (int j = 0; j < 4; j++)
+			{
+				sf::Vector2f intersection;
+				if (_LineVsLine(theseLines[i], bodyLines[j], intersection))
+					poíntsOfIntersection.push_back(intersection);
+			}
+		}
+		if (poíntsOfIntersection.size() > 0)
+		{
+			sf::Vector2f centerIntersection = { 0.0f, 0.0f };
+			for (auto& point : poíntsOfIntersection)
+				centerIntersection += point;
+			centerIntersection /= (float)poíntsOfIntersection.size();
+
+			
+			//Temporarily this, collision response for this is likely to be somewhat complicated.
+			SetVelocity(-_velocity);
+			return true;
+		}
+
 	}
 	return false;
 }
@@ -457,4 +478,66 @@ void PhysicsComponent::DebugRender()
 	Application::GetInstance()->Render(va);
 	Application::GetInstance()->Render(va2);
 	Application::GetInstance()->Render(va3);
+}
+
+
+
+
+
+void PhysicsComponent::_GetLines(PointLine * lines) const
+{
+	sf::Vector2f topLeftCorner = _position - sf::Vector2f(_width * 0.5f, _height * 0.5f);
+	topLeftCorner = topLeftCorner - _position;
+	topLeftCorner = sfm::rotateDeg(topLeftCorner, _rotation);
+	topLeftCorner = _position + topLeftCorner;
+
+	sf::Vector2f topRightCorner = _position - sf::Vector2f(-_width * 0.5f, _height * 0.5f);
+	topRightCorner = topRightCorner - _position;
+	topRightCorner = sfm::rotateDeg(topRightCorner, _rotation);
+	topRightCorner = _position + topRightCorner;
+
+	sf::Vector2f bottomLeftCorner = _position + sf::Vector2f(-_width * 0.5f, _height * 0.5f);
+	bottomLeftCorner = bottomLeftCorner - _position;
+	bottomLeftCorner = sfm::rotateDeg(bottomLeftCorner, _rotation);
+	bottomLeftCorner = _position + bottomLeftCorner;
+
+	sf::Vector2f bottomRightCorner = _position + sf::Vector2f(_width * 0.5f, _height * 0.5f);
+	bottomRightCorner = bottomRightCorner - _position;
+	bottomRightCorner = sfm::rotateDeg(bottomRightCorner, _rotation);
+	bottomRightCorner = _position + bottomRightCorner;
+	lines[0].p0 = topLeftCorner;
+	lines[0].p1 = topRightCorner;
+	lines[1].p0 = topRightCorner;
+	lines[1].p1 = bottomRightCorner;
+	lines[2].p0 = bottomRightCorner;
+	lines[2].p1 = bottomLeftCorner;
+	lines[3].p0 = bottomLeftCorner;
+	lines[3].p1 = topLeftCorner;
+}
+
+
+bool PhysicsComponent::_LineVsLine(const PointLine & l1, const PointLine & l2, sf::Vector2f & intersection) const
+{
+
+	sf::Vector2f s1, s2;
+	s1 = l1.p1 - l1.p0;
+	s2 = l2.p1 - l2.p0;
+
+
+	float s, t;
+	float denoms = (-s2.x * s1.y + s1.x * s2.y);
+	float denomt = (-s2.x * s1.y + s1.x * s2.y);
+	if (denoms == 0 || denomt == 0)
+		return false;
+	s = (-s1.y * (l1.p0.x - l2.p0.x) + s1.x * (l1.p0.y - l2.p0.y)) / denoms;
+	t = (s2.x * (l1.p0.y - l2.p0.y) - s2.y * (l1.p0.x - l2.p0.x)) / denomt;
+
+	if (s >= 0 && s <= 1 && t >= 0 && t <= 1)
+	{
+
+		intersection = { l1.p0.x + (t*s1.x), l1.p0.y + (t*s1.y) };
+		return true;
+	}
+
+	return false;
 }

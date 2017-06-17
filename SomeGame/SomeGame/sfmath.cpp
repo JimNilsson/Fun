@@ -10,6 +10,11 @@ float sfm::dot(const sf::Vector2f & u, const sf::Vector2f & v)
 {
 	return u.x * v.x + u.y * v.y;
 }
+float sfm::cross(const sf::Vector2f & u, const sf::Vector2f & v)
+{
+	//Two dimensional cross product.
+	return u.x*v.y - u.y*v.x;
+}
 /*Normalizes u and v and returns normalized half vector*/
 sf::Vector2f sfm::halfvector(const sf::Vector2f & u, const sf::Vector2f & v)
 {

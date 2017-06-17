@@ -78,6 +78,9 @@
     <ClCompile Include="WalkableGround.cpp">
       <Filter>Source Files\PhysGame</Filter>
     </ClCompile>
+    <ClCompile Include="Character.cpp">
+      <Filter>Source Files\PhysGame</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="TextureManager.h">
@@ -126,6 +129,9 @@
       <Filter>Header Files\PhysGame</Filter>
     </ClInclude>
     <ClInclude Include="WalkableGround.h">
+      <Filter>Header Files\PhysGame</Filter>
+    </ClInclude>
+    <ClInclude Include="Character.h">
       <Filter>Header Files\PhysGame</Filter>
     </ClInclude>
   </ItemGroup>

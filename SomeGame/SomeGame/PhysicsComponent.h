@@ -56,6 +56,8 @@ public:
 	void DebugRender();
 	static sf::Vector2f _gravity;
 private:
+	
+
 	sf::Vector2f _position;
 	sf::Vector2f _velocity;
 	sf::Vector2f _acceleration;
@@ -75,6 +77,20 @@ private:
 	
 	float _width;
 	float _height;
+	struct Line
+	{
+		sf::Vector2f o;
+		sf::Vector2f d;
+		float length;
+	};
+	struct PointLine
+	{
+		sf::Vector2f p0;
+		sf::Vector2f p1;
+	};
+
+	void _GetLines(PointLine* lines) const;
+	bool _LineVsLine(const PointLine& l1, const PointLine& l2, sf::Vector2f& intersection) const;
 
 	
 };

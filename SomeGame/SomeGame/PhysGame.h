@@ -4,6 +4,7 @@
 #include "IState.h"
 #include "PhysicsEngine.h"
 #include "GameObject.h"
+#include "Character.h"
 #include <vector>
 
 #include "WalkableGround.h"
@@ -18,6 +19,7 @@ public:
 	virtual void Draw();
 
 private:
+	Character* _character;
 	std::vector<WalkableGround> _ground;
 	std::vector<GameObject> _gameObjects;
 	PhysicsEngine _physEngine;
