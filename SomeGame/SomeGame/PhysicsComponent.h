@@ -52,6 +52,8 @@ public:
 	void ToggleFlag(int32_t flag);
 
 	bool Collision(PhysicsComponent& body);
+
+	float MomentOfInertia() const;
 	
 	void DebugRender();
 	static sf::Vector2f _gravity;

@@ -379,6 +379,18 @@ bool PhysicsComponent::Collision(PhysicsComponent & body)
 	return false;
 }
 
+float PhysicsComponent::MomentOfInertia() const
+{
+	
+	if (_flags & ROUND)
+	{
+		float radius = 0.5f*_width;
+		return _mass * radius * radius * 0.67f;
+	}
+	else /*rectangle*/
+		return _mass * 0.0833f* (_width * _width + _height * _height);
+}
+
 void PhysicsComponent::CollisionResponse(const sf::Vector2f ep, const sf::Vector2f & en, const sf::Vector2f & pointOfContact, PhysicsComponent & body)
 {
 	float v1p = sfm::dot(_velocity, ep);
@@ -397,7 +409,7 @@ void PhysicsComponent::CollisionResponse(const sf::Vector2f ep, const sf::Vector
 		sf::Vector2f v = pointOfContact - _position;
 		v = v - v*sfm::dot(ep, v);
 		float dist = sfm::length(v);
-		SetAngularVelocity(_angularVelocity + (u1p - v1p)*dist*sfm::dot(body.Velocity() + _velocity, { -ep.y, ep.x }) / (5.0f*body.Mass()));
+		SetAngularVelocity(_angularVelocity + (u1p - v1p)*dist*sfm::dot(body.Velocity() + _velocity, { -ep.y, ep.x }) / MomentOfInertia());
 	}
 	if (!(body.Flags() & STATIC))
 	{
@@ -405,7 +417,7 @@ void PhysicsComponent::CollisionResponse(const sf::Vector2f ep, const sf::Vector
 		sf::Vector2f v = pointOfContact - body._position;
 		v = v - v*sfm::dot(ep, v);
 		float dist = sfm::length(v);
-		body.SetAngularVelocity(body._angularVelocity + (u2p - v2p)*dist*sfm::dot(body.Velocity() + _velocity, { -ep.y, ep.x })/(5.0f*body.Mass()));
+		body.SetAngularVelocity(body._angularVelocity + (u2p - v2p)*dist*sfm::dot(body.Velocity() + _velocity, { -ep.y, ep.x })/body.MomentOfInertia());
 	}
 	body.EnableFlag(HAS_COLLIDED);
 	body._epOfLastCollision = ep;
