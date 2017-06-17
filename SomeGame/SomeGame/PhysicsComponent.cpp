@@ -249,21 +249,9 @@ bool PhysicsComponent::Collision(PhysicsComponent & body)
 			else
 				body.SetPosition(body._position - ep * ((_width + body._width)*0.5f - distance + 2));
 
-			//velocity along collision vector before collision
-			float v1p = sfm::dot(_velocity, ep);
-			float v2p = sfm::dot(body.Velocity(), ep);
-			float totMass = _mass + body.Mass();
-
-			//velocity along collision vector after collision
-			float e = (_collisionCoefficient + body.ResititutionCoefficient()) * 0.5f;
-			float u1p = (e * body.Mass() * (v2p - v1p) + _mass * v1p + body.Mass()*v2p) / totMass;
-			float u2p = (e*_mass * (v1p - v2p) + _mass*v1p + body.Mass() * v2p) / totMass;
-			
-
-			if(!(_flags & STATIC))
-				SetVelocity(_velocity + (u1p - v1p) * ep);
-			if(!(body.Flags() & STATIC))
-				body.SetVelocity(body._velocity + (u2p - v2p) * ep);
+			sf::Vector2f en = { 0.0f, 0.0f };
+			sf::Vector2f pointOfContact = body.Position() + ep * body.Width() * 0.5f;
+			CollisionResponse(ep, en,pointOfContact, body);
 			
 			return true;
 		}
@@ -281,7 +269,6 @@ bool PhysicsComponent::Collision(PhysicsComponent & body)
 		sf::Vector2f topLeftCorner = _position - sf::Vector2f(_width * 0.5f, _height * 0.5f);
 		topLeftCorner = topLeftCorner - _position;
 		topLeftCorner = sfm::rotateDeg(topLeftCorner, _rotation);
-
 		topLeftCorner = _position + topLeftCorner;
 		
 		sf::Vector2f topRightCorner = _position - sf::Vector2f(-_width * 0.5f, _height * 0.5f);
@@ -337,40 +324,10 @@ bool PhysicsComponent::Collision(PhysicsComponent & body)
 				else
 					body.SetPosition(body.Position() + ep * -distance);
 
-				//velocity along collision vector before collision
-				float v1p = sfm::dot(_velocity, ep);
-				float v2p = sfm::dot(body.Velocity(), ep);
-				float totMass = _mass + body.Mass();
-
-				//velocity along collision vector after collision
-				float e = (_collisionCoefficient + body.ResititutionCoefficient()) * 0.5f;
-				float u1p = (e * body.Mass() * (v2p - v1p) + _mass * v1p + body.Mass()*v2p) / totMass;
-				float u2p = (e*_mass * (v1p - v2p) + _mass*v1p + body.Mass() * v2p) / totMass;
-
-				sf::Vector2f en;
-				en = { -ep.y, ep.x };
-				en = -sfm::dot(sfm::normalize(_velocity + body.Velocity()), en)*en;
-				float enLen = sfm::length(en);
-				if (enLen > 0.01f)
-					en /= enLen;
-				float friction = (_frictionCoefficient + body.FrictionCoefficient()) * 0.5f;
-
-				if (!(_flags & STATIC))
-				{
-					SetVelocity(_velocity + (u1p - v1p) * (ep + en*friction));
-				}
-				if (!(body.Flags() & STATIC))
-				{
-					body.SetVelocity(body._velocity + (u2p - v2p) * (ep + en*friction));
-				//	body.SetAngularVelocity(body._angularVelocity + 5.0f*friction*(u2p-v2p) / body.Width());
-				}
+				sf::Vector2f en = { 0.0f, 0.0f };
+				CollisionResponse(ep, en, closestPoint, body);
 				
-				body.EnableFlag(HAS_COLLIDED);
-				body._epOfLastCollision = ep;
-				EnableFlag(HAS_COLLIDED);
-				_epOfLastCollision = ep;
 				return true;
-
 			}
 		}
 
@@ -382,32 +339,81 @@ bool PhysicsComponent::Collision(PhysicsComponent & body)
 		PointLine bodyLines[4];
 		_GetLines(theseLines);
 		body._GetLines(bodyLines);
-		std::vector<sf::Vector2f> poíntsOfIntersection;
+		std::vector<sf::Vector2f> pointsOfIntersection;
 		for (int i = 0; i < 4; i++)
 		{
 			for (int j = 0; j < 4; j++)
 			{
 				sf::Vector2f intersection;
 				if (_LineVsLine(theseLines[i], bodyLines[j], intersection))
-					poíntsOfIntersection.push_back(intersection);
+				{
+					pointsOfIntersection.push_back(intersection);
+				}
 			}
 		}
-		if (poíntsOfIntersection.size() > 0)
+		if (pointsOfIntersection.size() > 1)
 		{
-			sf::Vector2f centerIntersection = { 0.0f, 0.0f };
-			for (auto& point : poíntsOfIntersection)
-				centerIntersection += point;
-			centerIntersection /= (float)poíntsOfIntersection.size();
+			sf::Vector2f pointOfContact = (pointsOfIntersection[0] + pointsOfIntersection[1]) / 2.0f;
+			sf::Vector2f ep;
+			sf::Vector2f en = sfm::normalize(pointsOfIntersection[0] - pointsOfIntersection[1]);
+			en = -sfm::dot(en, _velocity) * en;
+			float enlen = sfm::length(en);
+			if (enlen > 0.0f)
+			{
+				en /= enlen;
+				ep = { en.y, -en.x };
+			}
+			else
+			{
+				ep = -sfm::normalize(_velocity);
+			}
 
-			
-			//Temporarily this, collision response for this is likely to be somewhat complicated.
-			SetVelocity(-_velocity);
+			CollisionResponse(ep, en, pointOfContact, body);
+
+
+
 			return true;
 		}
 
 	}
 	return false;
 }
+
+void PhysicsComponent::CollisionResponse(const sf::Vector2f ep, const sf::Vector2f & en, const sf::Vector2f & pointOfContact, PhysicsComponent & body)
+{
+	float v1p = sfm::dot(_velocity, ep);
+	float v2p = sfm::dot(body.Velocity(), ep);
+	float totMass = _mass + body.Mass();
+
+	float e = (_collisionCoefficient + body.ResititutionCoefficient()) * 0.5f;
+	float u1p = (e * body.Mass() * (v2p - v1p) + _mass * v1p + body.Mass()*v2p) / totMass;
+	float u2p = (e*_mass * (v1p - v2p) + _mass*v1p + body.Mass() * v2p) / totMass;
+
+	float friction = (_frictionCoefficient + body.FrictionCoefficient()) * 0.5f;
+
+	if (!(_flags & STATIC))
+	{
+		SetVelocity(_velocity + (u1p - v1p) * (ep + en*friction));
+		sf::Vector2f v = pointOfContact - _position;
+		v = v - v*sfm::dot(ep, v);
+		float dist = sfm::length(v);
+		SetAngularVelocity(_angularVelocity + (u1p - v1p)*dist*sfm::dot(body.Velocity() + _velocity, { -ep.y, ep.x }) / (5.0f*body.Mass()));
+	}
+	if (!(body.Flags() & STATIC))
+	{
+		body.SetVelocity(body._velocity + (u2p - v2p) * (ep + en*friction));
+		sf::Vector2f v = pointOfContact - body._position;
+		v = v - v*sfm::dot(ep, v);
+		float dist = sfm::length(v);
+		body.SetAngularVelocity(body._angularVelocity + (u2p - v2p)*dist*sfm::dot(body.Velocity() + _velocity, { -ep.y, ep.x })/(5.0f*body.Mass()));
+	}
+	body.EnableFlag(HAS_COLLIDED);
+	body._epOfLastCollision = ep;
+	EnableFlag(HAS_COLLIDED);
+	_epOfLastCollision = ep;
+
+}
+
 
 void PhysicsComponent::DebugRender()
 {
@@ -479,9 +485,6 @@ void PhysicsComponent::DebugRender()
 	Application::GetInstance()->Render(va2);
 	Application::GetInstance()->Render(va3);
 }
-
-
-
 
 
 void PhysicsComponent::_GetLines(PointLine * lines) const

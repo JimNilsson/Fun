@@ -12,8 +12,8 @@ PhysGame::PhysGame(Application * app) : IState(app)
 //	_gameObjects.push_back(GameObject(&_physEngine, { 0, 320 }, 100, RECT | STATIC, 800, 100, 90));
 //	_gameObjects.push_back(GameObject(&_physEngine, { 800, 320 }, 100, RECT | STATIC, 800, 100, 90));
 	_ground.push_back(WalkableGround(&_physEngine, { 0, 580 }, 800, 100, 0));
-//	_ground.push_back(WalkableGround(&_physEngine, { 400, 480 }, 700, 100, -25));
-//	_ground.push_back(WalkableGround(&_physEngine, { -400, 480 }, 700, 100, 25));
+	_ground.push_back(WalkableGround(&_physEngine, { 400, 480 }, 700, 100, -25));
+	_ground.push_back(WalkableGround(&_physEngine, { -400, 480 }, 700, 100, 25));
 }
 
 PhysGame::~PhysGame()

@@ -18,6 +18,7 @@ Character::~Character()
 void Character::Update(float dt)
 {
 	_sprite.setPosition(_physComponent->TopLeft());
+	_sprite.setRotation(_physComponent->Rotation());
 }
 
 void Character::draw(sf::RenderTarget & target, sf::RenderStates states) const

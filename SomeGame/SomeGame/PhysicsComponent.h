@@ -57,7 +57,7 @@ public:
 	static sf::Vector2f _gravity;
 private:
 	
-
+	void CollisionResponse(const sf::Vector2f ep, const sf::Vector2f& en, const sf::Vector2f& pointOfContact, PhysicsComponent& body);
 	sf::Vector2f _position;
 	sf::Vector2f _velocity;
 	sf::Vector2f _acceleration;
