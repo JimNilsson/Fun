@@ -16,7 +16,7 @@ public:
 	static Application* GetInstance();
 	static void Shutdown();
 
-	void Init();
+	
 	void ChangeState(IState* state);
 	void PushState(IState* state);
 	void PopState();
@@ -38,6 +38,7 @@ public:
 	
 
 private:
+	void Init();
 	Application();
 	~Application();
 	sf::RenderWindow _window;

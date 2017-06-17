@@ -6,7 +6,7 @@
 
 MenuState::MenuState(Application * app) : IState(app)
 {
-	_selections.SetPosition({ (float)_app->Width() / 2, (float)_app->Height() / 2 });
+	_selections.SetPosition(_app->View().getSize() / 2.0f);
 	_selections.AddOption("Snake", [this]() {_app->ChangeState(new SnakeState(_app)); });
 	_selections.AddOption("Pill Puzzle", [this]() {_app->ChangeState(new PillPuzzleState(_app)); });
 	_selections.AddOption("Physics Game", [this]() {_app->ChangeState(new PhysGame(_app)); });

@@ -78,7 +78,9 @@ void Application::Update()
 		_states.clear();
 		_states.push_back(_pendingStateChange);
 		_pendingStateChange = nullptr;
-		_view = _window.getDefaultView();
+		_view = _window.getView();
+		_view.setCenter(_view.getSize().x / 2.0f, _view.getSize().y / 2.0f);
+		
 	}
 	_eventHandler->Update();
 	if (_eventHandler->WindowClose())
@@ -108,12 +110,12 @@ void Application::Render(sf::Drawable & d)
 
 uint32_t Application::Width() const
 {
-	return _width;;
+	return (uint32_t)_window.getSize().x;
 }
 
 uint32_t Application::Height() const
 {
-	return _height;
+	return (uint32_t)_window.getSize().y;
 }
 
 TextureManager * Application::Textures()
