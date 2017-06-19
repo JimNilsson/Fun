@@ -6,7 +6,7 @@ PhysGame::PhysGame(Application * app) : IState(app)
 {
 
 	_character = new Character(&_physEngine, { 480.0f, 200.0f });
-	_gameObjects.push_back(GameObject(&_physEngine, { 200, 150 }, 5000, ROUND, 50, 50, 0));
+	_gameObjects.push_back(GameObject(&_physEngine, { 200, 150 }, 50, ROUND, 50, 50, 0));
 
 //	_gameObjects.push_back(GameObject(&_physEngine, { 400, 0 }, 100, RECT | STATIC, 800, 100, 0));
 //	_gameObjects.push_back(GameObject(&_physEngine, { 0, 320 }, 100, RECT | STATIC, 800, 100, 90));

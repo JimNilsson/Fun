@@ -32,4 +32,15 @@ sf::Vector2f sfm::rotateDeg(const sf::Vector2f & v, float degrees)
 	return sf::Vector2f(cosf(rad)*v.x - sinf(rad)*v.y, sinf(rad)*v.x + cosf(rad)*v.y);
 }
 
+int sfm::IndexOfMax(int * arr, int size)
+{
+	int max = 0;
+	for (int i = 1; i < size; i++)
+	{
+		if (arr[i] > arr[max])
+			max = i;
+	}
+	return max;
+}
+
 

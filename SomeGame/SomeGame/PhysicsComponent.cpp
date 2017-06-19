@@ -1,5 +1,6 @@
 #include "PhysicsComponent.h"
 #include "sfmath.h"
+#include <set>
 #include "Application.h"
 #include <math.h>
 sf::Vector2f PhysicsComponent::_gravity = { 0.0f, 200.0f };
@@ -249,7 +250,9 @@ bool PhysicsComponent::Collision(PhysicsComponent & body)
 			else
 				body.SetPosition(body._position - ep * ((_width + body._width)*0.5f - distance + 2));
 
-			sf::Vector2f en = { 0.0f, 0.0f };
+			sf::Vector2f en = { -ep.y, ep.x };
+			en = en - en * sfm::dot(sfm::normalize(_velocity + body._velocity), ep);
+			en = sfm::normalize(en);
 			sf::Vector2f pointOfContact = body.Position() + ep * body.Width() * 0.5f;
 			CollisionResponse(ep, en,pointOfContact, body);
 			
@@ -324,7 +327,7 @@ bool PhysicsComponent::Collision(PhysicsComponent & body)
 				else
 					body.SetPosition(body.Position() + ep * -distance);
 
-				sf::Vector2f en = { 0.0f, 0.0f };
+				sf::Vector2f en = { -ep.y, ep.x };
 				CollisionResponse(ep, en, closestPoint, body);
 				
 				return true;
@@ -340,6 +343,8 @@ bool PhysicsComponent::Collision(PhysicsComponent & body)
 		_GetLines(theseLines);
 		body._GetLines(bodyLines);
 		std::vector<sf::Vector2f> pointsOfIntersection;
+		int linesI[4] = {};
+		int linesJ[4] = {};
 		for (int i = 0; i < 4; i++)
 		{
 			for (int j = 0; j < 4; j++)
@@ -348,25 +353,28 @@ bool PhysicsComponent::Collision(PhysicsComponent & body)
 				if (_LineVsLine(theseLines[i], bodyLines[j], intersection))
 				{
 					pointsOfIntersection.push_back(intersection);
+					linesJ[j]++;
+					linesI[i]++;
 				}
 			}
 		}
 		if (pointsOfIntersection.size() > 1)
 		{
 			sf::Vector2f pointOfContact = (pointsOfIntersection[0] + pointsOfIntersection[1]) / 2.0f;
+			int maxJ = sfm::IndexOfMax(linesJ, 4);
+			int maxI = sfm::IndexOfMax(linesI, 4);
 			sf::Vector2f ep;
-			sf::Vector2f en = sfm::normalize(pointsOfIntersection[0] - pointsOfIntersection[1]);
-			en = -sfm::dot(en, _velocity) * en;
-			float enlen = sfm::length(en);
-			if (enlen > 0.0f)
-			{
-				en /= enlen;
-				ep = { en.y, -en.x };
-			}
+			sf::Vector2f en;
+			if (linesJ[maxJ] > linesI[maxI])
+				ep = sfm::normalize(bodyLines[maxJ].p1 - bodyLines[maxJ].p0);
 			else
-			{
-				ep = -sfm::normalize(_velocity);
-			}
+				ep = sfm::normalize(theseLines[maxI].p1 - theseLines[maxI].p0);
+			en = ep;
+			ep = { -ep.y, ep.x };
+			
+			
+
+			
 
 			CollisionResponse(ep, en, pointOfContact, body);
 
@@ -393,31 +401,33 @@ float PhysicsComponent::MomentOfInertia() const
 
 void PhysicsComponent::CollisionResponse(const sf::Vector2f ep, const sf::Vector2f & en, const sf::Vector2f & pointOfContact, PhysicsComponent & body)
 {
-	float v1p = sfm::dot(_velocity, ep);
-	float v2p = sfm::dot(body.Velocity(), ep);
-	float totMass = _mass + body.Mass();
-
 	float e = (_collisionCoefficient + body.ResititutionCoefficient()) * 0.5f;
-	float u1p = (e * body.Mass() * (v2p - v1p) + _mass * v1p + body.Mass()*v2p) / totMass;
-	float u2p = (e*_mass * (v1p - v2p) + _mass*v1p + body.Mass() * v2p) / totMass;
 
-	float friction = (_frictionCoefficient + body.FrictionCoefficient()) * 0.5f;
+	float relVelIn = sfm::dot((_velocity - body._velocity), ep);
+	float relVelOut = -e*(relVelIn);
+
+	sf::Vector2f raperp = pointOfContact - _position;
+	raperp = { -raperp.y, raperp.x };
+	sf::Vector2f rbperp = pointOfContact - body._position;
+	rbperp = { -rbperp.y, rbperp.x };
+	float ia = sfm::dot(raperp, ep);
+	ia *= ia;
+	ia /= MomentOfInertia();
+	float ib = sfm::dot(rbperp, ep);
+	ib *= ib;
+	ib /= MomentOfInertia();
+
+	float j = (-(1 + e)*relVelIn) / ((1.0f / _mass + 1.0f / body.Mass()) + ia + ib);
 
 	if (!(_flags & STATIC))
 	{
-		SetVelocity(_velocity + (u1p - v1p) * (ep + en*friction));
-		sf::Vector2f v = pointOfContact - _position;
-		v = v - v*sfm::dot(ep, v);
-		float dist = sfm::length(v);
-		SetAngularVelocity(_angularVelocity + (u1p - v1p)*dist*sfm::dot(body.Velocity() + _velocity, { -ep.y, ep.x }) / MomentOfInertia());
+		SetVelocity(_velocity + (j/_mass)*ep);
+		SetAngularVelocity(_angularVelocity + sfm::dot(raperp, ep)*j / MomentOfInertia());
 	}
 	if (!(body.Flags() & STATIC))
 	{
-		body.SetVelocity(body._velocity + (u2p - v2p) * (ep + en*friction));
-		sf::Vector2f v = pointOfContact - body._position;
-		v = v - v*sfm::dot(ep, v);
-		float dist = sfm::length(v);
-		body.SetAngularVelocity(body._angularVelocity + (u2p - v2p)*dist*sfm::dot(body.Velocity() + _velocity, { -ep.y, ep.x })/body.MomentOfInertia());
+		body.SetVelocity(body._velocity + (-j/body._mass)*ep);
+		body.SetAngularVelocity(body._angularVelocity + sfm::dot(rbperp, ep)*-j / body.MomentOfInertia());
 	}
 	body.EnableFlag(HAS_COLLIDED);
 	body._epOfLastCollision = ep;
@@ -491,11 +501,23 @@ void PhysicsComponent::DebugRender()
 	for (auto& v : v3)
 		va3.append(v);
 	
+
+	//epoflastcoll
+	sf::VertexArray va4;
+	va4.setPrimitiveType(sf::PrimitiveType::LinesStrip);
+	sf::Vertex v4[2];
+	for (auto& v : v4)
+		v.color = sf::Color::Magenta;
+	v4[0].position = _position;
+	v4[1].position = _position + 50.0f * _epOfLastCollision;
+	for (auto& v : v4)
+		va4.append(v);
 	
 
 	Application::GetInstance()->Render(va);
 	Application::GetInstance()->Render(va2);
 	Application::GetInstance()->Render(va3);
+	Application::GetInstance()->Render(va4);
 }
 
 

@@ -1,6 +1,6 @@
 #include "PhysicsEngine.h"
 #include "sfmath.h"
-PhysicsEngine::PhysicsEngine() : _gravity({ 0, 200 })
+PhysicsEngine::PhysicsEngine() : _gravity({ 0, 0 })
 {
 	_objects.reserve(_maxObjects);
 	_staticObjects.reserve(_maxStaticObjects);
